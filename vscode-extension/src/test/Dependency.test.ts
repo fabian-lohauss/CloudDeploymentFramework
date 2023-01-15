@@ -1,4 +1,4 @@
-import { Dependency } from "../src/Dependency";
+import { Dependency } from "../Dependency";
 import * as vscode from 'vscode';
 
 test('create dependency', () => {

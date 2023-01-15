@@ -13,6 +13,9 @@
 	"settings": {
 		"typescript.tsdk": "./node_modules/typescript/lib",
 		"typescript.tsc.autoDetect": "off",
-		"powershell.cwd": "/workspaces/DeploymentFramework/cmdlets"
+		"powershell.cwd": "/workspaces/DeploymentFramework/cmdlets",
+		"jest.disabledWorkspaceFolders": [
+			"cmdlets"
+		]
 	}
 }
