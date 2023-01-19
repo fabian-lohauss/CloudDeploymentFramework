@@ -1,26 +1,21 @@
 Function Find-DfProjectFolder {
-    $StartFolder = $pwd
-    $CurrentFolder = $StartFolder
+    $CurrentFolder = $pwd
+    $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
 
-    $ProjectFolder = Join-Path $CurrentFolder -ChildPath ".df"
-    $ProjectFolderFound = Test-Path $ProjectFolder
-    $SearchFailed = $false
-
-    while ((-not $ProjectFolderFound) -and (-not $SearchFailed)) {
+    while (-not $ProjectFolderFound) {
         $CurrentFolder = Split-Path $CurrentFolder -Parent
         if ([string]::IsNullOrEmpty($CurrentFolder)) {
-            $SearchFailed = $true
-            $ProjectFolderFound = $false
+            throw ("Failed to find DeploymentFramework project folder in '{0}'" -f $pwd)
         }
-        else {
-            $ProjectFolder = Join-Path $CurrentFolder -ChildPath ".df"
-            $ProjectFolderFound = Test-Path $ProjectFolder
-        }
+        $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
     }
 
-    if ($ProjectFolderFound) {
-        return (Resolve-Path $CurrentFolder).Path
-    }
+    return (Resolve-Path $CurrentFolder).Path
+}
 
-    throw ("Failed to find DeploymentFramework project folder in '{0}'" -f $StartFolder)
+Function Initialize-DfProject {
+    $ProjectFolder = Join-Path $PWD -ChildPath ".df"
+    if (-not (Test-Path $ProjectFolder)) {
+        New-Item -Path $ProjectFolder -ItemType Directory | Out-Null
+    }
 }
