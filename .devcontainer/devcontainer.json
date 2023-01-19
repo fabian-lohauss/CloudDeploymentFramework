@@ -10,6 +10,23 @@
 		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
 		"ghcr.io/devcontainers/features/powershell:1": {},
 		"ghcr.io/devcontainers/features/terraform:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.powershell",
+				"pspester.pester-test",
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"hashicorp.terraform",
+				"cschleiden.vscode-github-actions",
+				"ms-azuretools.vscode-docker",
+				"ms-azuretools.vscode-bicep",
+				"ms-azuretools.vscode-azureresourcegroups",
+				"msazurermtools.azurerm-vscode-tools",
+				"ms-vscode.azurecli"
+			]
+		}
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
