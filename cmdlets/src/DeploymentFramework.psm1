@@ -1,4 +1,7 @@
 Function Find-DfProjectFolder {
+    [CmdletBinding()]
+    param ( )
+
     $CurrentFolder = $pwd
     $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
 
@@ -14,6 +17,9 @@ Function Find-DfProjectFolder {
 }
 
 Function Initialize-DfProject {
+    [CmdletBinding()]
+    param ( )
+
     $ProjectFolder = Join-Path $PWD -ChildPath ".df"
     if (-not (Test-Path $ProjectFolder)) {
         New-Item -Path $ProjectFolder -ItemType Directory | Out-Null
@@ -21,32 +27,41 @@ Function Initialize-DfProject {
 }
 
 Function Get-DfProject {
+    [CmdletBinding()]
+    param ( )
+
     $Folder = Find-DfProjectFolder
     return @{ Folder = $Folder }
 }
 
 Function Connect-DfContext {
+    [CmdletBinding()]
+    param ( )
+
     Connect-AzAccount -Subscription (Get-DfProject).Environment.SubscriptionId
 }
 
 function Get-DfStampTemplate {
     [CmdletBinding()]
-    param (
-        
-    )
+    param ( )
     
-    begin { }
-    
-    process {
-        $StampFolder = (Get-DfProject).StampFolder
-        $Templates = @()
-        if (Test-Path $StampFolder) {
-            $Templates = foreach ($Folder in (Get-ChildItem $StampFolder -Directory)) {
-                @{ Name = $Folder.Name } 
-            }
+    $StampFolder = (Get-DfProject).StampFolder
+    $Templates = $null
+    if (Test-Path $StampFolder) {
+        $Templates = foreach ($Folder in (Get-ChildItem $StampFolder -Directory)) {
+            @{ Name = $Folder.Name } 
         }
-        return $Templates
     }
-    
-    end { }
+    return $Templates
+}
+
+
+function Deploy-DfStamp {
+    [CmdletBinding()]
+    param (
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [string]$Name
+    )
+
+    New-AzDeployment -Location "weu" -TemplateFile "ResourceGroup.bicep"
 }

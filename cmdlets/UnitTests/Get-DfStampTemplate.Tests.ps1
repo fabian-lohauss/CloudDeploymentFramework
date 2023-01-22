@@ -3,9 +3,7 @@ BeforeAll {
 }
 
 Describe "Get-DfStampTemplate" {
-    Context "valid template folder '<GivenFolders>'" -ForEach @(
-        @{ GivenFolders = @("TestDrive:/"); ExpectedTemplates = @( ) }
-        @{ GivenFolders = @("TestDrive:/Stamps"); ExpectedTemplates = @( ) }
+    Context "valid templates '<GivenFolders>'" -ForEach @(
         @{ GivenFolders = @("TestDrive:/Stamps/AStamp"); ExpectedTemplates = @( @{ Name = "AStamp" } ) }
         @{ GivenFolders = @("TestDrive:/Stamps/AStamp", "TestDrive:/Stamps/SecondStamp"); ExpectedTemplates = @( @{ Name = "AStamp" }, @{ Name = "SecondStamp" } ) }
     ) {
@@ -36,4 +34,31 @@ Describe "Get-DfStampTemplate" {
             Should -Invoke Get-DfProject -ModuleName DeploymentFramework
         }
     }
+
+    Context "no templates" -ForEach @(
+        @{ GivenFolders = @() }
+        @{ GivenFolders = @("TestDrive:/Stamps") }
+    ) {
+        BeforeAll {
+            foreach ($Folder in $GivenFolders) {
+                New-Item $Folder -ItemType Directory -Force | Out-Null
+            }
+            Mock Get-DfProject { return @{ StampFolder = "TestDrive:/Stamps" } } -ModuleName DeploymentFramework
+        }
+
+        It "should not throw" {
+            { Get-DfStampTemplate } | Should -Not -Throw
+        }
+
+        It "should not have errors" {
+            $Error.Clear()
+            Get-DfStampTemplate 
+            $Error | Should -HaveCount 0
+        }
+
+        It "should return null" {
+            Get-DfStampTemplate | Should -Be $null
+            Should -Invoke Get-DfProject -ModuleName DeploymentFramework
+        }
+    }    
 }
