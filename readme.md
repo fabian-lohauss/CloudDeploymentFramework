@@ -3,7 +3,15 @@
 
 ```pwsh
 Initialize-DfProject
-New-DfComponent "keyvault", "loadbalancer" -Type bicep
+@"
+param location string 
+resource sa 'Microsoft.Storage/storageAccounts@2022-09-01' = { name: '{uniqueString(resourceGroup().id)}-sa', location: location, sku: { name: 'Standard_LRS' }, kind: 'StorageV2' }
+"@ | New-DfComponent "keyvault" -Type bicep
+
+@"
+param location string 
+resource sa 'Microsoft.Storage/storageAccounts@2022-09-01' = { name: '{uniqueString(resourceGroup().id)}-sa', location: location, sku: { name: 'Standard_LRS' }, kind: 'StorageV2' }
+"@ | New-DfComponent "loadbalancer" -Type bicep
 New-DfServiceTemplate "shared" | Add-DfComponent "keyvault", "loadbalancer"
 
 Get-DfServiceTemplate -Type "shared" -Latest -AllowPrerelease | Deploy-DfService 
