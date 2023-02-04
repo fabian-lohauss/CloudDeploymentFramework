@@ -21,9 +21,9 @@ Describe "New-DfComponent" {
         }
 
         It "should have the <PropertyName>=<ExpectedValue>" -TestCases @(
-            @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/Components/Something" }
+            @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/Components/Something/v1.0" }
             @{ PropertyName = "Name"; ExpectedValue = "Something" }
-            @{ PropertyName = "Version"; ExpectedValue = [Version]"1.0" }
+            @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease" }
             @{ PropertyName = "PreRelease"; ExpectedValue = $true }
         ) {
             ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
@@ -33,6 +33,10 @@ Describe "New-DfComponent" {
 
         It "should create the component folder in the library" {
             (Get-ChildItem TestDrive:/Components -Directory).Name | Should -Contain "Something"
+        }
+
+        It "should create the version folder under the component folder" {
+            (Get-ChildItem TestDrive:/Components/Something -Directory).Name | Should -Contain "v1.0"
         }
     }
 }
