@@ -65,3 +65,20 @@ function Deploy-DfStamp {
 
     New-AzDeployment -Location "weu" -TemplateFile "ResourceGroup.bicep"
 }
+
+
+
+function New-DfComponent {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    $Project = Get-DfProject
+    $ComponentFolder = Join-Path $Project.Library -ChildPath $Name 
+    New-Item -Path $ComponentFolder -ItemType Directory | Out-Null
+    
+    return New-Object -TypeName PSCustomObject -Property @{ Path = $ComponentFolder  }
+        
+ }
