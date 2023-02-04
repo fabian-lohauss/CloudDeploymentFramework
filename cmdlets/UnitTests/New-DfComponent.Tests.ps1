@@ -23,6 +23,7 @@ Describe "New-DfComponent" {
         It "should have the <PropertyName>=<ExpectedValue>" -TestCases @(
             @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/Components/Something" }
             @{ PropertyName = "Name"; ExpectedValue = "Something" }
+            @{ PropertyName = "Version"; ExpectedValue = "1.0" }
         ) {
             ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
             $sut.$PropertyName | Should -Be $ExpectedValue

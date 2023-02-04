@@ -78,7 +78,11 @@ function New-DfComponent {
     $Project = Get-DfProject
     $ComponentFolder = Join-Path $Project.Library -ChildPath $Name 
     New-Item -Path $ComponentFolder -ItemType Directory | Out-Null
-    
-    return New-Object -TypeName PSCustomObject -Property @{ Path = $ComponentFolder; Name = $Name }
+    $Properties = @{ 
+        Path    = $ComponentFolder;
+        Name    = $Name;
+        Version = [Version]"1.0" 
+    }
+    return New-Object -TypeName PSCustomObject -Property $Properties
         
 }
