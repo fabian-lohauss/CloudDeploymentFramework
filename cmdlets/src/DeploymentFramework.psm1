@@ -31,7 +31,7 @@ Function Get-DfProject {
     param ( )
 
     $Folder = Find-DfProjectFolder
-    return @{ Folder = $Folder }
+    return @{ Folder = $Folder; Library = Join-Path $Folder -ChildPath "Components" }
 }
 
 Function Connect-DfContext {
@@ -79,6 +79,6 @@ function New-DfComponent {
     $ComponentFolder = Join-Path $Project.Library -ChildPath $Name 
     New-Item -Path $ComponentFolder -ItemType Directory | Out-Null
     
-    return New-Object -TypeName PSCustomObject -Property @{ Path = $ComponentFolder  }
+    return New-Object -TypeName PSCustomObject -Property @{ Path = $ComponentFolder; Name = $Name }
         
- }
+}

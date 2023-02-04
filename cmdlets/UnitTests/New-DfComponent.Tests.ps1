@@ -12,7 +12,7 @@ Describe "New-DfComponent" {
 
     Context "happy path" {
         BeforeAll {
-            Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ Library = "TestDrive:/Components"}  } -ModuleName DeploymentFramework -Verifiable
+            Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ Library = "TestDrive:/Components" } } -ModuleName DeploymentFramework -Verifiable
             $sut = New-DfComponent "Something"
         }
 
@@ -20,8 +20,12 @@ Describe "New-DfComponent" {
             $sut | Should -HaveCount 1
         }
 
-        It "should return the base path" {
-            $sut.Path | Should -Be "TestDrive:/Components/Something"  
+        It "should have the <PropertyName>=<ExpectedValue>" -TestCases @(
+            @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/Components/Something" }
+            @{ PropertyName = "Name"; ExpectedValue = "Something" }
+        ) {
+            ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
+            $sut.$PropertyName | Should -Be $ExpectedValue
             Should -InvokeVerifiable
         }
 

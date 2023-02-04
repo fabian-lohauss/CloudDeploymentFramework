@@ -12,5 +12,9 @@ Describe "Get-DfProject" {
             (Get-DfProject).Folder | Should -Be "TestDrive:/"  
             Should -InvokeVerifiable
         }
+
+        It "should return the library path" {
+            (Get-DfProject).Library | Should -Be "TestDrive:/Components"
+        }
     }
 }
