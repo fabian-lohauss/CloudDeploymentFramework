@@ -16,8 +16,9 @@ Describe "New-DfServiceTemplate" {
         }
 
         It "should have '<PropertyName>=<ExpectedValue>'" -TestCases @(
-            @{ PropertyName = "Name"; ExpectedValue = "AService"}
-            @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease"} 
+            @{ PropertyName = "Name"; ExpectedValue = "AService" }
+            @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease" } 
+            @{ PropertyName = "PreRelease"; ExpectedValue = $true } 
         ) {
             ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
             $sut.$PropertyName | Should -Be $ExpectedValue

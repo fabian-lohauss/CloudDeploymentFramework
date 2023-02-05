@@ -114,5 +114,5 @@ function New-DfServiceTemplate {
         [string]$Name
     )
 
-    return New-Object -TypeName PSCustomObject -Property @{ Name = $Name; Version="1.0-PreRelease" }
+    return New-Object -TypeName PSCustomObject -Property @{ Name = $Name; Version="1.0-PreRelease"; PreRelease = $true }
 }
