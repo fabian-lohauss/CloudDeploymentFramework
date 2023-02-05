@@ -1,8 +1,8 @@
 
 ```pwsh
-Initialize-DfProject | Add-DfEnvironment "dev" -Subscription (Get-AzSubscription).Id -AsOverride
+Initialize-DfProject | Add-DfEnvironment "dev" -Subscription (Get-AzSubscription).Id 
 New-DfComponent "keyvault" | New-Item -Name "main.bicep" -Value @"
-param name string = '{uniqueString(resourceGroup().id)}-sa'
+param name string = '{uniqueString(resourceGroup().id)}-kv'
 param location string = resourceGroup().location
 param tenant string = subscription().tenantId
 
@@ -11,7 +11,7 @@ resource kv 'Microsoft.KeyVault/vaults@2022-07-01' = { name: name, location: loc
 
 New-DfServiceTemplate "shared" | Add-DfComponent "keyvault"
 
-Get-DfServiceTemplate -Type "shared" -Latest -AllowPrerelease | Deploy-DfService 
+Get-DfServiceTemplate "shared" | Deploy-DfService 
 Get-DfServiceTemplate -Type "workload" -Version 3.1 | Deploy-DfService -StampId 000, 001, 002
 
 

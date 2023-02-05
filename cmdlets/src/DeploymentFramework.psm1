@@ -92,3 +92,27 @@ function New-DfComponent {
     return New-Object -TypeName PSCustomObject -Property $Properties
         
 }
+
+
+function Add-DfEnvironment {
+    [CmdletBinding()]
+    param (
+        [string]$Name,
+        [string]$Subscription
+    )
+    
+    $ConfigurationFile = Join-Path (Get-DfProject).Path -ChildPath ".df/Configuration.json"
+    $Config = Get-Content $ConfigurationFile | ConvertFrom-Json -AsHashtable
+    $Config.Environment = @{ $Name = @{ Subscription = $Subscription } }
+    $Config | ConvertTo-Json | Out-File $ConfigurationFile
+}
+
+function New-DfServiceTemplate {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    return New-Object -TypeName PSCustomObject -Property @{ Name = $Name }
+}
