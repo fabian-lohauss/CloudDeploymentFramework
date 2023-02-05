@@ -3,7 +3,7 @@ BeforeAll {
 }
 
 Describe "Find-DfProjectFolder" {
-    Context "valid project folder" -ForEach @(
+    Context "valid project folder <GivenFolders>" -ForEach @(
         @{ GivenFolders = @("TestDrive:/.df"); GivenWorkingDirectory = "TestDrive:/"; ExpectedFolder = "TestDrive:/" }
         @{ GivenFolders = @("TestDrive:/.df", "TestDrive:/SomeFolder"); GivenWorkingDirectory = "TestDrive:/SomeFolder"; ExpectedFolder = "TestDrive:/" }
         @{ GivenFolders = @("TestDrive:/.df", "TestDrive:/SomeFolder/OtherFolder"); GivenWorkingDirectory = "TestDrive:/SomeFolder/OtherFolder"; ExpectedFolder = "TestDrive:/" }
@@ -26,7 +26,7 @@ Describe "Find-DfProjectFolder" {
         }
     }
 
-    Context "no project folder" -ForEach @(
+    Context "no project folder <GivenFolders>" -ForEach @(
         @{ GivenFolders = @(); GivenWorkingDirectory = "TestDrive:/"; ExpectedMessage = "Failed to find DeploymentFramework project folder in 'TestDrive:/'" }
         @{ GivenFolders = @("TestDrive:/SomeFolder", "TestDrive:/OtherFolder/.df"); GivenWorkingDirectory = "TestDrive:/SomeFolder"; ExpectedMessage = "Failed to find DeploymentFramework project folder in 'TestDrive:/SomeFolder'" }
         @{ GivenFolders = @("TestDrive:/SomeFolder/AFolder"); GivenWorkingDirectory = "TestDrive:/SomeFolder/AFolder"; ExpectedMessage = "Failed to find DeploymentFramework project folder in 'TestDrive:/SomeFolder/AFolder'" }

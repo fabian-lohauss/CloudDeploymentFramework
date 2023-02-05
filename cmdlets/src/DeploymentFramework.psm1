@@ -31,7 +31,7 @@ Function Get-DfProject {
     param ( )
 
     $Folder = Find-DfProjectFolder
-    return @{ Folder = $Folder }
+    return @{ Folder = $Folder; Library = Join-Path $Folder -ChildPath "Components" }
 }
 
 Function Connect-DfContext {
@@ -64,4 +64,26 @@ function Deploy-DfStamp {
     )
 
     New-AzDeployment -Location "weu" -TemplateFile "ResourceGroup.bicep"
+}
+
+
+
+function New-DfComponent {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    $Project = Get-DfProject
+    $ComponentFolder = Join-Path $Project.Library -ChildPath $Name -AdditionalChildPath "v1.0"
+    New-Item -Path $ComponentFolder -ItemType Directory | Out-Null
+    $Properties = @{ 
+        Path       = $ComponentFolder;
+        Name       = $Name;
+        Version    = "1.0-PreRelease"
+        PreRelease = $true
+    }
+    return New-Object -TypeName PSCustomObject -Property $Properties
+        
 }
