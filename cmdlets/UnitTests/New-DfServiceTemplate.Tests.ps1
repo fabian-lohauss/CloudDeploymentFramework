@@ -25,6 +25,7 @@ Describe "New-DfServiceTemplate" {
 
         It "should have '<PropertyName>=<ExpectedValue>'" -TestCases @(
             @{ PropertyName = "Name"; ExpectedValue = "AService" }
+            @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/Services/AService/v1.0" }
             @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease" } 
             @{ PropertyName = "PreRelease"; ExpectedValue = $true } 
         ) {
