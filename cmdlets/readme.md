@@ -1,6 +1,6 @@
 
 ```pwsh
-Initialize-DfProject | Add-DfLibrary -Path "./Components" -RepositoryURL "nuget.pkg.github.com/owner"
+Initialize-DfProject | Add-DfEnvironment "dev" -Subscription (Get-AzSubscription).Id -AsOverride
 New-DfComponent "keyvault" | New-Item -Name "main.bicep" -Value @"
 param name string = '{uniqueString(resourceGroup().id)}-sa'
 param location string = resourceGroup().location
@@ -9,13 +9,7 @@ param tenant string = subscription().tenantId
 resource kv 'Microsoft.KeyVault/vaults@2022-07-01' = { name: name, location: location, properties: { sku: { family: 'A', name: 'premium' }, tenantId: tenant } }
 "@ 
 
-New-DfComponent "storage" | New-Item -Name "main.bicep" -Value @"
-param name string = '{uniqueString(resourceGroup().id)}-sa'
-param location string 
-
-resource sa 'Microsoft.Storage/storageAccounts@2022-09-01' = { name: name, location: location, sku: { name: 'Standard_LRS' }, kind: 'StorageV2' }
-"@ 
-New-DfServiceTemplate "shared" | Add-DfComponent "keyvault", "loadbalancer" -Latest 
+New-DfServiceTemplate "shared" | Add-DfComponent "keyvault"
 
 Get-DfServiceTemplate -Type "shared" -Latest -AllowPrerelease | Deploy-DfService 
 Get-DfServiceTemplate -Type "workload" -Version 3.1 | Deploy-DfService -StampId 000, 001, 002
