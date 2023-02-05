@@ -12,7 +12,7 @@ Describe "New-DfComponent" {
 
     Context "happy path" {
         BeforeAll {
-            Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ Library = "TestDrive:/Components" } } -ModuleName DeploymentFramework -Verifiable
+            Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ ComponentsPath = "TestDrive:/Components" } } -ModuleName DeploymentFramework -Verifiable
             $sut = New-DfComponent "Something"
         }
 
@@ -31,7 +31,7 @@ Describe "New-DfComponent" {
             Should -InvokeVerifiable
         }
 
-        It "should create the component folder in the library" {
+        It "should create the component folder in the ComponentsPath" {
             (Get-ChildItem TestDrive:/Components -Directory).Name | Should -Contain "Something"
         }
 

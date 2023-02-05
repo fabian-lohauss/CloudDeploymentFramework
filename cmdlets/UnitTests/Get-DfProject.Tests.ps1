@@ -10,7 +10,7 @@ Describe "Get-DfProject" {
 
         It "should return the base path" -TestCases @(
             @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/" }
-            @{ PropertyName = "Library"; ExpectedValue = "TestDrive:/Components" }
+            @{ PropertyName = "ComponentsPath"; ExpectedValue = "TestDrive:/Components" }
             @{ PropertyName = "ServicesPath"; ExpectedValue = "TestDrive:/Services" }
         ) {
             (Get-DfProject).$PropertyName | Should -Be $ExpectedValue

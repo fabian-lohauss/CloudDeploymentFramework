@@ -38,7 +38,7 @@ Function Get-DfProject {
     $Folder = Find-DfProjectFolder
     $Properties = @{ 
         Path    = $Folder.FullName;
-        Library = Join-Path $Folder.FullName -ChildPath "Components"
+        ComponentsPath = Join-Path $Folder.FullName -ChildPath "Components"
         ServicesPath = Join-Path $Folder.FullName -ChildPath "Services"
     }
     return $Properties
@@ -86,7 +86,7 @@ function New-DfComponent {
     )
 
     $Project = Get-DfProject
-    $ComponentFolder = Join-Path $Project.Library -ChildPath $Name -AdditionalChildPath "v1.0"
+    $ComponentFolder = Join-Path $Project.ComponentsPath -ChildPath $Name -AdditionalChildPath "v1.0"
     New-Item -Path $ComponentFolder -ItemType Directory | Out-Null
     $Properties = @{ 
         Path       = $ComponentFolder;
