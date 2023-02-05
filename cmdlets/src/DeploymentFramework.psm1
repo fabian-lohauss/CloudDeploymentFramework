@@ -27,7 +27,7 @@ Function Initialize-DfProject {
 
     $ConfigurationFile = Join-Path $ProjectFolder -ChildPath "Configuration.json"
     if (-not (Test-Path $ConfigurationFile)) {
-        New-Item $ConfigurationFile -ItemType File | Out-Null
+        New-Item $ConfigurationFile -ItemType File -Value "{}" | Out-Null
     }
 }
 

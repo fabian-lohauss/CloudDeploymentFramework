@@ -22,6 +22,10 @@ Describe "Initialize-DfProject" {
             (Get-ChildItem "TestDrive:/.df").Name | Should -Contain "Configuration.json"
         }
 
+        It "should create a json file for configuration" {
+            ( Get-Content "TestDrive:/.df/Configuration.json" | ConvertFrom-Json ) | Should -Not -Be $null
+        }
+
         It "should not have output" {
             $Sut | Should -Be $null
         }
