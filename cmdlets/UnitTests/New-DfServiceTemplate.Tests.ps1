@@ -11,8 +11,17 @@ Describe "New-DfServiceTemplate" {
     }
 
     Context "return object" {
-        It "should have property 'Name'" {
-            (New-DfServiceTemplate -Name "AService" | Get-Member -MemberType NoteProperty).Name | Should -Contain "Name"
+        BeforeAll {
+            $sut = New-DfServiceTemplate -Name "AService"
         }
+
+        It "should have '<PropertyName>=<ExpectedValue>'" -TestCases @(
+            @{ PropertyName = "Name"; ExpectedValue = "AService"}
+            @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease"} 
+        ) {
+            ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
+            $sut.$PropertyName | Should -Be $ExpectedValue
+        }
+
     }
 }
