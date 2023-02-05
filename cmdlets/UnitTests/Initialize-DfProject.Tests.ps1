@@ -18,14 +18,18 @@ Describe "Initialize-DfProject" {
             (Get-ChildItem "TestDrive:/" -Hidden).Name | Should -Contain ".df"
         }
 
+        It "should create the configuration file" {
+            (Get-ChildItem "TestDrive:/.df").Name | Should -Contain "Configuration.json"
+        }
+
         It "should not have output" {
             $Sut | Should -Be $null
         }
     }
 
-    Context "current folder initialized" {
+    Context "current folder already initialized" {
         BeforeAll {
-            New-Item -Path "TestDrive:/" -Name ".df" -ItemType Directory | Out-Null
+            New-Item -Path "TestDrive:/.df" -Name "Configuration.json" -ItemType File -Value "@{ }" -Force | Out-Null
             Push-Location "TestDrive:/"
         }
 
