@@ -131,3 +131,43 @@ function New-DfServiceTemplate {
 
     return New-Object -TypeName PSCustomObject -Property $Properties
 }
+
+function Import-DfServiceTemplate {
+    [CmdletBinding()]
+    param (
+        [string]$Path
+    )
+
+    throw "not implemented"
+}
+
+function Export-DfServiceTemplate {
+    [CmdletBinding()]
+    param (
+        [string]$Path,
+        [PSCustomObject]$Object
+    )
+
+    throw "not implemented"
+}
+
+function Get-DfComponent {
+    [CmdletBinding()]
+    param (
+        [string]$Name
+    )
+
+    throw "not implemented"
+}
+
+function Add-DfComponent {
+    [CmdletBinding()]
+    param (
+        [string]$Path,
+        [string]$Name
+    )
+    $Component = Get-DfComponent $Name
+    $ServiceTemplate = Import-DfServiceTemplate -Path $Path
+    $ServiceTemplate.Component | Add-Member -NotePropertyName $Name -NotePropertyValue $Component.Version 
+    Export-DfServiceTemplate -Path $Path -Object $ServiceTemplate
+}
