@@ -20,5 +20,11 @@
 		"jest.disabledWorkspaceFolders": [
 			"cmdlets"
 		]
+	},
+	"extensions": {
+		"recommendations": [
+			"pspester.pester-test",
+			"ms-vscode.powershell"
+		]
 	}
 }
