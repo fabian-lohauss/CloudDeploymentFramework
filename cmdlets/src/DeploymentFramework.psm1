@@ -36,7 +36,12 @@ Function Get-DfProject {
     param ( )
 
     $Folder = Find-DfProjectFolder
-    return @{ Path = $Folder.FullName; Library = Join-Path $Folder.FullName -ChildPath "Components" }
+    $Properties = @{ 
+        Path    = $Folder.FullName;
+        Library = Join-Path $Folder.FullName -ChildPath "Components"
+        ServicesPath = Join-Path $Folder.FullName -ChildPath "Services"
+    }
+    return $Properties
 }
 
 Function Connect-DfContext {
@@ -114,5 +119,8 @@ function New-DfServiceTemplate {
         [string]$Name
     )
 
-    return New-Object -TypeName PSCustomObject -Property @{ Name = $Name; Version="1.0-PreRelease"; PreRelease = $true }
+    $ServiceTemplateFolder = Join-Path (Get-DfProject).ServicesPath -ChildPath $Name -AdditionalChildPath "v1.0"
+    New-Item $ServiceTemplateFolder -ItemType Directory | Out-Null
+
+    return New-Object -TypeName PSCustomObject -Property @{ Name = $Name; Version = "1.0-PreRelease"; PreRelease = $true }
 }

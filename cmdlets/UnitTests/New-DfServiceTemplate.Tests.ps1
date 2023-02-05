@@ -4,6 +4,10 @@ BeforeAll {
 
 
 Describe "New-DfServiceTemplate" {
+    BeforeAll {
+        Mock Get-DfProject { return New-Object PSCustomObject -Property @{ ServicesPath = "TestDrive:/Services" } } -ModuleName DeploymentFramework
+    }
+
     Context "ParameterSet" {
         It "should have a mandatory name parameter" {
             Get-Command -Name New-DfServiceTemplate | Should -HaveParameter Name -Mandatory 
@@ -15,6 +19,10 @@ Describe "New-DfServiceTemplate" {
             $sut = New-DfServiceTemplate -Name "AService"
         }
 
+        It "should return one object" {
+            $sut | Should -HaveCount 1
+        }
+
         It "should have '<PropertyName>=<ExpectedValue>'" -TestCases @(
             @{ PropertyName = "Name"; ExpectedValue = "AService" }
             @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease" } 
@@ -23,6 +31,16 @@ Describe "New-DfServiceTemplate" {
             ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
             $sut.$PropertyName | Should -Be $ExpectedValue
         }
+    }
 
+    Context "persistent file" {
+        BeforeAll {
+            $sut = New-DfServiceTemplate -Name "AService"
+        }
+        
+        It "should create a service template folder" {
+            (Get-ChildItem "TestDrive:/Services" -Directory).Name | Should -Contain "AService"
+            (Get-ChildItem "TestDrive:/Services/AService" -Directory).Name | Should -Contain "v1.0"
+        }
     }
 }

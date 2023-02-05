@@ -3,18 +3,18 @@ BeforeAll {
 }
 
 Describe "Get-DfProject" {
-    Context "valid project folder" {
+    Context "return object" {
         BeforeAll {
             Mock Find-DfProjectFolder { return New-Object -Type PSCustomObject -Property @{ FullName = "TestDrive:/" } } -ModuleName DeploymentFramework -Verifiable
         }
 
-        It "should return the base path" {
-            (Get-DfProject).Path | Should -Be "TestDrive:/"  
+        It "should return the base path" -TestCases @(
+            @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/" }
+            @{ PropertyName = "Library"; ExpectedValue = "TestDrive:/Components" }
+            @{ PropertyName = "ServicesPath"; ExpectedValue = "TestDrive:/Services" }
+        ) {
+            (Get-DfProject).$PropertyName | Should -Be $ExpectedValue
             Should -InvokeVerifiable
-        }
-
-        It "should return the library path" {
-            (Get-DfProject).Library | Should -Be "TestDrive:/Components"
         }
     }
 }
