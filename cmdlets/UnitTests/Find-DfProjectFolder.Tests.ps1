@@ -10,10 +10,13 @@ Describe "Find-DfProjectFolder" {
         @{ GivenFolders = @("TestDrive:/SomeFolder/.df"); GivenWorkingDirectory = "TestDrive:/SomeFolder"; ExpectedFolder = "TestDrive:/SomeFolder" }
         @{ GivenFolders = @("TestDrive:/SomeFolder/.df", "TestDrive:/SomeFolder/OtherFolder"); GivenWorkingDirectory = "TestDrive:/SomeFolder/OtherFolder"; ExpectedFolder = "TestDrive:/SomeFolder" }
     ) {
-        BeforeEach {
+        BeforeAll {
             foreach ($GivenFolder in $GivenFolders) {
                 New-Item -Path $GivenFolder -ItemType Directory | Out-Null
             }
+        }
+
+        BeforeEach {
             Push-Location $GivenWorkingDirectory
         }
         
@@ -21,8 +24,12 @@ Describe "Find-DfProjectFolder" {
             Pop-Location
         }
 
+        It "should return a System.IO.DirectoryInfo" {
+            (Find-DfProjectFolder) | Should -BeOfType System.IO.DirectoryInfo
+        }
+
         It "should return the project folder '$ExpectedFolder'" {
-            Find-DfProjectFolder | Should -Be $ExpectedFolder
+            (Find-DfProjectFolder).FullName | Should -Be (Get-Item $ExpectedFolder).FullName
         }
     }
 

@@ -1,5 +1,6 @@
 Function Find-DfProjectFolder {
     [CmdletBinding()]
+    [OutputType("System.IO.DirectoryInfo")]
     param ( )
 
     $CurrentFolder = $pwd
@@ -12,8 +13,7 @@ Function Find-DfProjectFolder {
         }
         $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
     }
-
-    return (Resolve-Path $CurrentFolder).Path
+    return Get-Item $CurrentFolder
 }
 
 Function Initialize-DfProject {
@@ -36,7 +36,7 @@ Function Get-DfProject {
     param ( )
 
     $Folder = Find-DfProjectFolder
-    return @{ Folder = $Folder; Library = Join-Path $Folder -ChildPath "Components" }
+    return @{ Path = $Folder.FullName; Library = Join-Path $Folder.FullName -ChildPath "Components" }
 }
 
 Function Connect-DfContext {

@@ -5,11 +5,11 @@ BeforeAll {
 Describe "Get-DfProject" {
     Context "valid project folder" {
         BeforeAll {
-            Mock Find-DfProjectFolder { return "TestDrive:/" } -ModuleName DeploymentFramework -Verifiable
+            Mock Find-DfProjectFolder { return New-Object -Type PSCustomObject -Property @{ FullName = "TestDrive:/" } } -ModuleName DeploymentFramework -Verifiable
         }
 
         It "should return the base path" {
-            (Get-DfProject).Folder | Should -Be "TestDrive:/"  
+            (Get-DfProject).Path | Should -Be "TestDrive:/"  
             Should -InvokeVerifiable
         }
 
