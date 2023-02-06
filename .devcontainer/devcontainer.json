@@ -29,15 +29,13 @@
 		}
 	},
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "Install-Module Pester -Scope CurrentUser -Force"
+	"postCreateCommand": "Install-Module Pester -Scope CurrentUser -Force",
 
+	"postStartCommand": "pwsh -File .devcontainer/custom/Invoke-PostStartCommand.ps1"
 	// Configure tool-specific properties.
 	// "customizations": {},
 
