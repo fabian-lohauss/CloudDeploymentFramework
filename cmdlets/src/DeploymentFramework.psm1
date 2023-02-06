@@ -144,11 +144,13 @@ function Import-DfServiceTemplate {
 function Export-DfServiceTemplate {
     [CmdletBinding()]
     param (
-        [string]$Path,
         [PSCustomObject]$Object
     )
 
-    throw "not implemented"
+    $ServiceTemplateFolder = Join-Path (Get-DfProject).ServicesPath -ChildPath $Object.Name -AdditionalChildPath ("v" + $Object.Version)
+    $Object.PSObject.Properties.Remove('Path')
+
+    New-Item $ServiceTemplateFolder -Name ("{0}.json" -f $Object.Name) -ItemType File -Value ($Object | ConvertTo-Json) -Force | Out-Null
 }
 
 function Get-DfComponent {
@@ -178,5 +180,5 @@ function Add-DfComponent {
     $Component = Get-DfComponent $Name
     $ServiceTemplate = Import-DfServiceTemplate -Path $Path
     $ServiceTemplate.Component | Add-Member -NotePropertyName $Name -NotePropertyValue $Component.Version 
-    Export-DfServiceTemplate -Path $Path -Object $ServiceTemplate
+    Export-DfServiceTemplate -Object $ServiceTemplate
 }
