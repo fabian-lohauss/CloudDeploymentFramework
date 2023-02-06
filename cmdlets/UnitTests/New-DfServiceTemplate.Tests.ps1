@@ -23,14 +23,23 @@ Describe "New-DfServiceTemplate" {
             $sut | Should -HaveCount 1
         }
 
-        It "should have '<PropertyName>=<ExpectedValue>'" -TestCases @(
+        It "should have property [<ExpectedType>]<PropertyName>" -TestCases @(
+            @{ PropertyName = "Name"; ExpectedType = [string] }
+            @{ PropertyName = "Path"; ExpectedType = [string] }
+            @{ PropertyName = "Version"; ExpectedType = [string] } 
+            @{ PropertyName = "PreRelease"; ExpectedType = [bool] } 
+            @{ PropertyName = "Component"; ExpectedType = [hashtable]} 
+        ) {
+            ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
+            $sut.$PropertyName | Should -BeOfType $ExpectedType
+        }
+
+        It "should have value '<PropertyName>=<ExpectedValue>'" -TestCases @(
             @{ PropertyName = "Name"; ExpectedValue = "AService" }
             @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/Services/AService/v1.0" }
             @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease" } 
             @{ PropertyName = "PreRelease"; ExpectedValue = $true } 
-            @{ PropertyName = "Component"; ExpectedValue = $null } 
         ) {
-            ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
             $sut.$PropertyName | Should -Be $ExpectedValue
         }
     }

@@ -5,8 +5,7 @@ BeforeAll {
 Describe "Import-DfServiceTemplate" {
     Context "happy path" {
         BeforeAll {
-            $Template = '{ "Name": "SecondService", "Version": "2.1", "Component": { "OtherComponent":  "1.3"} }'
-            New-Item "TestDrive:/Services/SecondService/v2.1/SecondService.json" -ItemType File -Value $Template -Force
+            New-Item "TestDrive:/Services/SecondService/v2.1/SecondService.json" -ItemType File -Value '{ "Name": "SecondService", "Version": "2.1", "Component": { "OtherComponent": "1.3"} }'-Force
         }
 
         It "should return the service template" {

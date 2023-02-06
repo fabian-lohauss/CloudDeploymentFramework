@@ -7,7 +7,7 @@ Describe "Initialize-DfProject" {
     Context "current folder not initialized" {
         BeforeAll {
             Push-Location "TestDrive:/"
-            $Sut = Initialize-DfProject
+            Initialize-DfProject -OutVariable sut
         }
 
         AfterAll {
