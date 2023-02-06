@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "cmdlets"
+		},
+		{
+			"path": "Library"
 		}
 	],
 	"settings": {
@@ -16,6 +19,12 @@
 		"powershell.cwd": "/workspaces/DeploymentFramework/cmdlets",
 		"jest.disabledWorkspaceFolders": [
 			"cmdlets"
+		]
+	},
+	"extensions": {
+		"recommendations": [
+			"pspester.pester-test",
+			"ms-vscode.powershell"
 		]
 	}
 }

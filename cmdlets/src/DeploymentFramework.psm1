@@ -1,26 +1,173 @@
 Function Find-DfProjectFolder {
-    $StartFolder = $pwd
-    $CurrentFolder = $StartFolder
+    [CmdletBinding()]
+    [OutputType("System.IO.DirectoryInfo")]
+    param ( )
 
-    $ProjectFolder = Join-Path $CurrentFolder -ChildPath ".df"
-    $ProjectFolderFound = Test-Path $ProjectFolder
-    $SearchFailed = $false
+    $CurrentFolder = $pwd
+    $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
 
-    while ((-not $ProjectFolderFound) -and (-not $SearchFailed)) {
+    while (-not $ProjectFolderFound) {
         $CurrentFolder = Split-Path $CurrentFolder -Parent
         if ([string]::IsNullOrEmpty($CurrentFolder)) {
-            $SearchFailed = $true
-            $ProjectFolderFound = $false
+            throw ("Failed to find DeploymentFramework project folder in '{0}'" -f $pwd)
         }
-        else {
-            $ProjectFolder = Join-Path $CurrentFolder -ChildPath ".df"
-            $ProjectFolderFound = Test-Path $ProjectFolder
-        }
+        $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
+    }
+    return Get-Item $CurrentFolder
+}
+
+Function Initialize-DfProject {
+    [CmdletBinding()]
+    param ( )
+
+    $ProjectFolder = Join-Path $PWD -ChildPath ".df"
+    if (-not (Test-Path $ProjectFolder)) {
+        New-Item -Path $ProjectFolder -ItemType Directory | Out-Null
     }
 
-    if ($ProjectFolderFound) {
-        return (Resolve-Path $CurrentFolder).Path
+    $ConfigurationFile = Join-Path $ProjectFolder -ChildPath "Configuration.json"
+    if (-not (Test-Path $ConfigurationFile)) {
+        New-Item $ConfigurationFile -ItemType File -Value "{}" | Out-Null
+    }
+}
+
+Function Get-DfProject {
+    [CmdletBinding()]
+    param ( )
+
+    $Folder = Find-DfProjectFolder
+    $Properties = @{ 
+        Path           = $Folder.FullName;
+        ComponentsPath = Join-Path $Folder.FullName -ChildPath "Components"
+        ServicesPath   = Join-Path $Folder.FullName -ChildPath "Services"
+    }
+    return $Properties
+}
+
+Function Connect-DfContext {
+    [CmdletBinding()]
+    param ( )
+
+    Connect-AzAccount -Subscription (Get-DfProject).Environment.SubscriptionId
+}
+
+function Get-DfStampTemplate {
+    [CmdletBinding()]
+    param ( )
+    
+    $StampFolder = (Get-DfProject).StampFolder
+    $Templates = $null
+    if (Test-Path $StampFolder) {
+        $Templates = foreach ($Folder in (Get-ChildItem $StampFolder -Directory)) {
+            @{ Name = $Folder.Name } 
+        }
+    }
+    return $Templates
+}
+
+
+function Deploy-DfStamp {
+    [CmdletBinding()]
+    param (
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [string]$Name
+    )
+
+    New-AzDeployment -Location "weu" -TemplateFile "ResourceGroup.bicep"
+}
+
+
+
+function New-DfComponent {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    $Project = Get-DfProject
+    $ComponentFolder = Join-Path $Project.ComponentsPath -ChildPath $Name -AdditionalChildPath "v1.0"
+    New-Item -Path $ComponentFolder -ItemType Directory | Out-Null
+    $Properties = @{ 
+        Path       = $ComponentFolder;
+        Name       = $Name;
+        Version    = "1.0-PreRelease"
+        PreRelease = $true
+    }
+    return New-Object -TypeName PSCustomObject -Property $Properties
+        
+}
+
+
+function Add-DfEnvironment {
+    [CmdletBinding()]
+    param (
+        [string]$Name,
+        [string]$Subscription
+    )
+    
+    $ConfigurationFile = Join-Path (Get-DfProject).Path -ChildPath ".df/Configuration.json"
+    $Config = Get-Content $ConfigurationFile | ConvertFrom-Json -AsHashtable
+    $Config.Environment = @{ $Name = @{ Subscription = $Subscription } }
+    $Config | ConvertTo-Json | Out-File $ConfigurationFile
+}
+
+function New-DfServiceTemplate {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    $ServiceTemplateFolder = Join-Path (Get-DfProject).ServicesPath -ChildPath $Name -AdditionalChildPath "v1.0"
+    New-Item $ServiceTemplateFolder -ItemType Directory | Out-Null
+
+    $Properties = @{ 
+        Name       = $Name; 
+        Version    = "1.0-PreRelease";
+        PreRelease = $true 
+        Path       = $ServiceTemplateFolder
     }
 
-    throw ("Failed to find DeploymentFramework project folder in '{0}'" -f $StartFolder)
+    return New-Object -TypeName PSCustomObject -Property $Properties
+}
+
+function Import-DfServiceTemplate {
+    [CmdletBinding()]
+    param (
+        [string]$Path
+    )
+
+    throw "not implemented"
+}
+
+function Export-DfServiceTemplate {
+    [CmdletBinding()]
+    param (
+        [string]$Path,
+        [PSCustomObject]$Object
+    )
+
+    throw "not implemented"
+}
+
+function Get-DfComponent {
+    [CmdletBinding()]
+    param (
+        [string]$Name
+    )
+
+    throw "not implemented"
+}
+
+function Add-DfComponent {
+    [CmdletBinding()]
+    param (
+        [string]$Path,
+        [string]$Name
+    )
+    $Component = Get-DfComponent $Name
+    $ServiceTemplate = Import-DfServiceTemplate -Path $Path
+    $ServiceTemplate.Component | Add-Member -NotePropertyName $Name -NotePropertyValue $Component.Version 
+    Export-DfServiceTemplate -Path $Path -Object $ServiceTemplate
 }

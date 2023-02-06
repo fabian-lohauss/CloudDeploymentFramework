@@ -33,9 +33,9 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "Install-Module Pester -Scope CurrentUser -Force",
+	"postCreateCommand": "pwsh -File ./.devcontainer/custom/Invoke-PostCreateCommand.ps1",
 
-	"postStartCommand": "pwsh -File .devcontainer/custom/Invoke-PostStartCommand.ps1"
+	"postStartCommand": "pwsh -File ./.devcontainer/custom/Invoke-PostStartCommand.ps1"
 	// Configure tool-specific properties.
 	// "customizations": {},
 
