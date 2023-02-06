@@ -1,13 +1,13 @@
 
 ```pwsh
-Initialize-DfProject | Add-DfEnvironment "dev" -Subscription (Get-AzSubscription).Id 
+Initialize-DfProject # | Add-DfEnvironment "dev" -Subscription (Get-AzSubscription).Id 
 New-DfComponent "keyvault" | New-Item -Name "main.bicep" -Value @"
 param name string = '{uniqueString(resourceGroup().id)}-kv'
 param location string = resourceGroup().location
 param tenant string = subscription().tenantId
 
 resource kv 'Microsoft.KeyVault/vaults@2022-07-01' = { name: name, location: location, properties: { sku: { family: 'A', name: 'premium' }, tenantId: tenant } }
-"@ 
+"@ | Out-Null
 
 New-DfServiceTemplate "shared" | Add-DfComponent "keyvault"
 

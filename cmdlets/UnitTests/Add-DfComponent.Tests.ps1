@@ -3,6 +3,19 @@ BeforeAll {
 }
 
 Describe "Add-DfComponent" {
+    Context "Parameterset" {
+        It "should have a '<ExpectedParameter>' parameter" -TestCases @(
+            @{ ExpectedParameter = 'Name' }
+            @{ ExpectedParameter = 'Path' }
+        ) {
+            Get-Command Add-DfComponent | Should -HaveParameter $ExpectedParameter
+        }
+
+        It "should accept 'Path' from the pipeline property" {
+            (Get-Command Add-DfComponent).Parameters["Path"].Attributes.ValueFromPipelineByPropertyName | Should -be $true
+        }
+    }
+
     Context "happy path" {
         BeforeEach {
             Mock Import-DfServiceTemplate { return New-Object -TypeName PSCustomObject -Property @{ Component = New-Object -TypeName PSCustomObject } } -ModuleName DeploymentFramework -Verifiable

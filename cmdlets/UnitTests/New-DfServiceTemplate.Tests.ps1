@@ -16,7 +16,7 @@ Describe "New-DfServiceTemplate" {
 
     Context "return object" {
         BeforeAll {
-            $sut = New-DfServiceTemplate -Name "AService"
+            New-DfServiceTemplate -Name "AService" -OutVariable sut
         }
 
         It "should return one object" {
@@ -28,6 +28,7 @@ Describe "New-DfServiceTemplate" {
             @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/Services/AService/v1.0" }
             @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease" } 
             @{ PropertyName = "PreRelease"; ExpectedValue = $true } 
+            @{ PropertyName = "Component"; ExpectedValue = $null } 
         ) {
             ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
             $sut.$PropertyName | Should -Be $ExpectedValue
@@ -36,12 +37,16 @@ Describe "New-DfServiceTemplate" {
 
     Context "persistent file" {
         BeforeAll {
-            $sut = New-DfServiceTemplate -Name "AService"
+            New-DfServiceTemplate -Name "AService" -OutVariable sut
         }
         
         It "should create a service template folder" {
             (Get-ChildItem "TestDrive:/Services" -Directory).Name | Should -Contain "AService"
             (Get-ChildItem "TestDrive:/Services/AService" -Directory).Name | Should -Contain "v1.0"
+        }
+
+        It "should crete the service template file" {
+            (Get-ChildItem "TestDrive:/Services/AService/v1.0").Name | Should -Contain "AService.json"
         }
     }
 }

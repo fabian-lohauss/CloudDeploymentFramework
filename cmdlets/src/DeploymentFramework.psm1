@@ -127,9 +127,13 @@ function New-DfServiceTemplate {
         Version    = "1.0-PreRelease";
         PreRelease = $true 
         Path       = $ServiceTemplateFolder
+        Component  = @{}
     }
+    $ServiceTemplate = New-Object -TypeName PSCustomObject -Property $Properties
 
-    return New-Object -TypeName PSCustomObject -Property $Properties
+    $ServiceTemplate | Export-DfServiceTemplate
+
+    return $ServiceTemplate
 }
 
 function Import-DfServiceTemplate {
@@ -138,19 +142,29 @@ function Import-DfServiceTemplate {
         [string]$Path
     )
 
-    throw "not implemented"
+    $ServiceTemplateFile = Get-ChildItem $Path -Filter "*.json"
+    $ServiceTemplate = Get-Content $ServiceTemplateFile | ConvertFrom-Json
+    $ServiceTemplate | Add-Member -NotePropertyName Path -NotePropertyValue $Path
+    return $ServiceTemplate
 }
 
 function Export-DfServiceTemplate {
     [CmdletBinding()]
     param (
+        [Parameter(ValueFromPipeline)]
         [PSCustomObject]$Object
     )
 
-    $ServiceTemplateFolder = Join-Path (Get-DfProject).ServicesPath -ChildPath $Object.Name -AdditionalChildPath ("v" + $Object.Version)
-    $Object.PSObject.Properties.Remove('Path')
+    $ServiceTemplateFolder = Join-Path (Get-DfProject).ServicesPath -ChildPath $Object.Name -AdditionalChildPath ("v" + ($Object.Version -replace "-PreRelease", ""))
+    $ExportObject = New-Object -TypeName PSCustomObject
+    foreach ($Property in ($Object | Get-Member -MemberType NoteProperty)) {
+        if ($Property.Name -ne "Path") {
+            $PropertyName = $Property.Name
+            $ExportObject | Add-Member -NotePropertyName $PropertyName -NotePropertyValue $Object.$PropertyName
+        }
+    }
 
-    New-Item $ServiceTemplateFolder -Name ("{0}.json" -f $Object.Name) -ItemType File -Value ($Object | ConvertTo-Json) -Force | Out-Null
+    New-Item $ServiceTemplateFolder -Name ("{0}.json" -f $Object.Name) -ItemType File -Value ($ExportObject | ConvertTo-Json) -Force | Out-Null
 }
 
 function Get-DfComponent {
@@ -174,9 +188,13 @@ function Get-DfComponent {
 function Add-DfComponent {
     [CmdletBinding()]
     param (
+        [Parameter(ValueFromPipelineByPropertyName)]
         [string]$Path,
+
+        [Parameter(Position = 0)]
         [string]$Name
     )
+
     $Component = Get-DfComponent $Name
     $ServiceTemplate = Import-DfServiceTemplate -Path $Path
     $ServiceTemplate.Component | Add-Member -NotePropertyName $Name -NotePropertyValue $Component.Version 
