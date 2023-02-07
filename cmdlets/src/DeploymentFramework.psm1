@@ -225,8 +225,10 @@ function Add-DfComponent {
 function Deploy-DfService {
     [CmdletBinding()]
     param (
-        
+        [Parameter(Position=0)]
+        [string]$Name
     )
 
-    New-AzResourceGroupDeployment -ResourceGroupName "rg" -TemplateParameterFile "a.bicep"
+    $Template = Get-ChildItem . -Filter "*.bicep" 
+    New-AzResourceGroupDeployment -ResourceGroupName "$Name-rg" -TemplateFile $Template.FullName
 }
