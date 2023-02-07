@@ -221,3 +221,12 @@ function Add-DfComponent {
     $ServiceTemplate.Component | Add-Member -NotePropertyName $Name -NotePropertyValue $Component.Version 
     Export-DfServiceTemplate -Object $ServiceTemplate
 }
+
+function Deploy-DfService {
+    [CmdletBinding()]
+    param (
+        
+    )
+
+    New-AzResourceGroupDeployment -ResourceGroupName "rg" -TemplateParameterFile "a.bicep"
+}
