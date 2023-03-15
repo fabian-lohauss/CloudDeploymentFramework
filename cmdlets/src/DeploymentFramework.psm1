@@ -226,9 +226,14 @@ function Deploy-DfService {
     [CmdletBinding()]
     param (
         [Parameter(Position=0)]
-        [string]$Name
+        [string]$Name,
+
+        [Parameter(Position=1)]
+        [string]$Version
     )
 
-    $Template = Get-ChildItem . -Filter "*.bicep" 
+    $ProjectConfiguration = Get-DfProject 
+    $ProjectFolder = Join-Path $ProjectConfiguration.ServicesPath -ChildPath $Name -AdditionalChildPath ("v{0}" -f $Version)
+    $Template = Get-ChildItem $ProjectFolder -Filter "*.bicep" 
     New-AzResourceGroupDeployment -ResourceGroupName "$Name-rg" -TemplateFile $Template.FullName
 }
