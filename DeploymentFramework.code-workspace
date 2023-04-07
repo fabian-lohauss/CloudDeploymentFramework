@@ -1,6 +1,7 @@
 {
 	"folders": [
 		{
+			"name": "DeploymentFramework (root)",
 			"path": "."
 		},
 		{
@@ -11,6 +12,10 @@
 		},
 		{
 			"path": "Library"
+		},
+		{
+			"name": "DevContainer (build)",
+			"path": "devcontainer"
 		}
 	],
 	"settings": {
