@@ -133,7 +133,14 @@ function New-DfServiceTemplate {
 
     $ServiceTemplate | Export-DfServiceTemplate
 
-    New-Item $ServiceTemplateFolder -Name ("{0}.bicep" -f $Name) -ItemType File | Out-Null
+    New-Item $ServiceTemplateFolder -Name ("{0}.bicep" -f $Name) -ItemType File -value @"
+    targetScope = 'subscription'
+    
+    param name string
+    param location string = deployment().location
+    
+    resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = { name: name, location: location }
+"@ | Out-Null
 
     return $ServiceTemplate
 }

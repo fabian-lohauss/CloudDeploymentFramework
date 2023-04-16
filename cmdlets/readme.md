@@ -9,14 +9,7 @@ param tenant string = subscription().tenantId
 resource kv 'Microsoft.KeyVault/vaults@2022-07-01' = { name: name, location: location, properties: { sku: { family: 'A', name: 'premium' }, tenantId: tenant } }
 "@ | Out-Null
 
-New-DfServiceTemplate "shared" | New-Item -Name "service.bicep" -value @"
-targetScope = 'subscription'
-
-param name string
-param location string = deployment().location
-
-resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = { name: name, location: location }
-"@ | Out-Null
+New-DfServiceTemplate "shared" 
 
 Get-DfServiceTemplate "shared" | Add-DfComponent "keyvault"
 Deploy-DfService -Name "shared" 
