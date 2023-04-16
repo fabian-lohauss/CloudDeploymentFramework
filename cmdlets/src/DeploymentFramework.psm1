@@ -4,14 +4,14 @@ Function Find-DfProjectFolder {
     param ( )
 
     $CurrentFolder = $pwd
-    $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
+    $ServiceFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
 
-    while (-not $ProjectFolderFound) {
+    while (-not $ServiceFolderFound) {
         $CurrentFolder = Split-Path $CurrentFolder -Parent
         if ([string]::IsNullOrEmpty($CurrentFolder)) {
             throw ("Failed to find DeploymentFramework project folder in '{0}'" -f $pwd)
         }
-        $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
+        $ServiceFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
     }
     return Get-Item $CurrentFolder
 }
@@ -20,12 +20,12 @@ Function Initialize-DfProject {
     [CmdletBinding()]
     param ( )
 
-    $ProjectFolder = Join-Path $PWD -ChildPath ".df"
-    if (-not (Test-Path $ProjectFolder)) {
-        New-Item -Path $ProjectFolder -ItemType Directory | Out-Null
+    $ServiceFolder = Join-Path $PWD -ChildPath ".df"
+    if (-not (Test-Path $ServiceFolder)) {
+        New-Item -Path $ServiceFolder -ItemType Directory | Out-Null
     }
 
-    $ConfigurationFile = Join-Path $ProjectFolder -ChildPath "Configuration.json"
+    $ConfigurationFile = Join-Path $ServiceFolder -ChildPath "Configuration.json"
     if (-not (Test-Path $ConfigurationFile)) {
         New-Item $ConfigurationFile -ItemType File -Value "{}" | Out-Null
     }
@@ -127,7 +127,7 @@ function New-DfServiceTemplate {
         Version    = "1.0-PreRelease";
         PreRelease = $true 
         Path       = $ServiceTemplateFolder
-        Component  = @{}
+        Component  = (New-Object -TypeName System.Collections.ArrayList)
     }
     $ServiceTemplate = New-Object -TypeName PSCustomObject -Property $Properties
 
@@ -224,25 +224,56 @@ function Add-DfComponent {
         [Parameter(Position = 0)]
         [string]$Name
     )
-
+    Write-Verbose ("Adding component {0} to service template {1}" -f $Name, $Path)
     $Component = Get-DfComponent $Name
     $ServiceTemplate = Import-DfServiceTemplate -Path $Path
-    $ServiceTemplate.Component | Add-Member -NotePropertyName $Name -NotePropertyValue $Component.Version 
+    $ServiceTemplate.Component += @([PSCustomObject]@{ Name = $Component.Name; Version = $Component.Version })
     Export-DfServiceTemplate -Object $ServiceTemplate
+}
+
+Function Deploy-DfComponent {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Name,
+
+        [Parameter(Mandatory)]
+        [string]$Version,
+
+        [Parameter(Mandatory)]
+        [string]$ResourceGroupName
+    )
+
+    Write-Verbose ("Deploying component {0} v{1} to resource group {2}" -f $Name, $Version, $ResourceGroupName)
+    $ProjectConfiguration = Get-DfProject 
+    $ComponentFolder = Join-Path $ProjectConfiguration.ComponentsPath -ChildPath $Name -AdditionalChildPath ("v{0}" -f $Version)
+    $ComponentTemplate = Get-ChildItem $ComponentFolder -Filter "main.bicep"
+    New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $ComponentTemplate.FullName | Out-Null
+    Write-Verbose ("Component {0} v{1} deployed to resource group {2}" -f $Name, $Version, $ResourceGroupName)
 }
 
 function Deploy-DfService {
     [CmdletBinding()]
     param (
-        [Parameter(Position=0)]
+        [Parameter(Position = 0)]
         [string]$Name,
 
-        [Parameter(Position=1)]
+        [Parameter(Position = 1)]
         [string]$Version
     )
 
+    Write-Verbose ("Deploying service {0} v{1}" -f $Name, $Version)
+
     $ProjectConfiguration = Get-DfProject 
-    $ProjectFolder = Join-Path $ProjectConfiguration.ServicesPath -ChildPath $Name -AdditionalChildPath ("v{0}" -f $Version)
-    $Template = Get-ChildItem $ProjectFolder -Filter "*.bicep" 
-    New-AzResourceGroupDeployment -ResourceGroupName "$Name-rg" -TemplateFile $Template.FullName
+    $ServiceFolder = Join-Path $ProjectConfiguration.ServicesPath -ChildPath $Name -AdditionalChildPath ("v{0}" -f $Version)
+
+    $Self = Import-DfServiceTemplate -Path $ServiceFolder
+
+    $ServiceTemplate = Join-Path $ServiceFolder -ChildPath "$Name.bicep" 
+    New-AzDeployment -TemplateFile $ServiceTemplate -Location "westeurope" -TemplateParameterObject @{ Name = ("{0}-rg" -f $Name) } | Out-Null
+
+    $Components = $Self | Select-Object -ExpandProperty Component
+    foreach ($Component in $Components) {
+        Deploy-DfComponent -Name $Component.Name -Version $Component.Version -ResourceGroupName ("{0}-rg" -f $Name)
+    }
+    Write-Verbose ("Service {0} v{1} deployed" -f $Name, $Version)
 }

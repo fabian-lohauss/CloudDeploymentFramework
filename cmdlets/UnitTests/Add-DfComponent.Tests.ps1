@@ -18,7 +18,7 @@ Describe "Add-DfComponent" {
 
     Context "happy path" {
         BeforeEach {
-            Mock Import-DfServiceTemplate { return New-Object -TypeName PSCustomObject -Property @{ Component = New-Object -TypeName PSCustomObject } } -ModuleName DeploymentFramework -Verifiable
+            Mock Import-DfServiceTemplate { return New-Object -TypeName PSCustomObject -Property @{ Component = [System.Collections.ArrayList]@(@{ Name = "TheComponent"; Version = "1.1" }) } } -ModuleName DeploymentFramework -Verifiable
             Mock Export-DfServiceTemplate { New-Item "TestDrive:/Services/AService/v1.0/AService.json" -ItemType File -Value ($Object | ConvertTo-Json) -Force | Out-Null } -ModuleName DeploymentFramework -Verifiable
             Mock Get-DfComponent { return @{ Version = "1.1" } } -ModuleName DeploymentFramework -Verifiable
         }
@@ -27,7 +27,9 @@ Describe "Add-DfComponent" {
             Add-DfComponent -Path "TestDrive:/Services/AService/v1.0" -Name "TheComponent"
             Should -InvokeVerifiable
             $Config = (Get-Content "TestDrive:/Services/AService/v1.0/AService.json" | ConvertFrom-Json)
-            $Config.Component.TheComponent | Should -Be "1.1"
+            $Config.Component[0].Name | Should -Be "TheComponent"
+            $Config.Component[0].Version | Should -Be "1.1"
         }
+
     }
 }

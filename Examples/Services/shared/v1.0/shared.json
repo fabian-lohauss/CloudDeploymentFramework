@@ -1,0 +1,11 @@
+{
+  "Component": [
+    {
+      "Name": "keyvault",
+      "Version": "1.0"
+    }
+  ],
+  "Name": "shared",
+  "PreRelease": true,
+  "Version": "1.0-PreRelease"
+}

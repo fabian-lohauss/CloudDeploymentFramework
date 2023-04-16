@@ -16,6 +16,9 @@
 		{
 			"name": "DevContainer (build)",
 			"path": "devcontainer"
+		},
+		{
+			"path": "Examples"
 		}
 	],
 	"settings": {

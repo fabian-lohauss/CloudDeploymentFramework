@@ -9,10 +9,9 @@ param tenant string = subscription().tenantId
 resource kv 'Microsoft.KeyVault/vaults@2022-07-01' = { name: name, location: location, properties: { sku: { family: 'A', name: 'premium' }, tenantId: tenant } }
 "@ | Out-Null
 
-New-DfServiceTemplate "shared" 
+New-DfServiceTemplate "shared" | Add-DfComponent "keyvault"
 
-Get-DfServiceTemplate "shared" | Add-DfComponent "keyvault"
-Deploy-DfService -Name "shared" 
+Deploy-DfService -Name "shared" -Version 1.0
 
 ```
 # Release Management

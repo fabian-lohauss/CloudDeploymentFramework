@@ -28,10 +28,13 @@ Describe "New-DfServiceTemplate" {
             @{ PropertyName = "Path"; ExpectedType = [string] }
             @{ PropertyName = "Version"; ExpectedType = [string] } 
             @{ PropertyName = "PreRelease"; ExpectedType = [bool] } 
-            @{ PropertyName = "Component"; ExpectedType = [hashtable]} 
         ) {
             ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
             $sut.$PropertyName | Should -BeOfType $ExpectedType
+        }
+
+        It "should have component as list" {
+            $sut | Get-Member Component | Should -be "System.Collections.ArrayList Component="
         }
 
         It "should have value '<PropertyName>=<ExpectedValue>'" -TestCases @(
