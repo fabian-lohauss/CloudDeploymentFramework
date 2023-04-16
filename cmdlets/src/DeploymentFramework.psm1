@@ -133,6 +133,8 @@ function New-DfServiceTemplate {
 
     $ServiceTemplate | Export-DfServiceTemplate
 
+    New-Item $ServiceTemplateFolder -Name ("{0}.bicep" -f $Name) -ItemType File | Out-Null
+
     return $ServiceTemplate
 }
 

@@ -54,8 +54,12 @@ Describe "New-DfServiceTemplate" {
             (Get-ChildItem "TestDrive:/Services/AService" -Directory).Name | Should -Contain "v1.0"
         }
 
-        It "should crete the service template file" {
+        It "should create the service template file" {
             (Get-ChildItem "TestDrive:/Services/AService/v1.0").Name | Should -Contain "AService.json"
+        }
+
+        It "should create the default bicep" {
+            (Get-ChildItem "TestDrive:/Services/AService/v1.0").Name | Should -Contain "AService.bicep"
         }
     }
 }
