@@ -9,15 +9,28 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onView:sampleTreeView"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "deploymentframework.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sample-container",
+          "title": "DeploymentFramework",
+          "icon": "$(cloud-upload)"
+        }
+      ]
+    },
+    "views": {
+      "sample-container": [
+        {
+          "id": "sampleTreeView",
+          "name": "Sample Tree View"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
