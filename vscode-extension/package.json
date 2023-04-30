@@ -19,7 +19,7 @@
         {
           "id": "sample-container",
           "title": "DeploymentFramework",
-          "icon": "$(cloud-upload)"
+          "icon": "./resources/deployment-framework-icon.svg"
         }
       ]
     },
