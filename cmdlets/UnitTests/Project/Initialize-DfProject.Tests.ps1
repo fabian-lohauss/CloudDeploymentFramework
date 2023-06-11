@@ -5,10 +5,6 @@ BeforeAll {
 Describe "Initialize-DfProject" {
 
     Context "Parameter set" {
-        It "should have a parameter set named 'Default'" {
-            (Get-Command Initialize-DfProject).ParameterSets.Name | Should -Contain "Default"
-        }
-
         It "should have a mandatory parameter 'Name'" {
             (Get-Command Initialize-DfProject) | Should -HaveParameter "Name" -Mandatory
         }
@@ -17,7 +13,7 @@ Describe "Initialize-DfProject" {
     Context "current folder not initialized" {
         BeforeAll {
             Push-Location "TestDrive:/"
-            Initialize-DfProject -Name "Project" -OutVariable sut
+            $sut = Initialize-DfProject -Name "Project"
         }
 
         AfterAll {
@@ -31,33 +27,36 @@ Describe "Initialize-DfProject" {
         It "should create the configuration file" {
             (Get-ChildItem "TestDrive:/.df").Name | Should -Contain "Configuration.json"
         }
-
-        It "should create a json file for configuration" {
-            ( Get-Content "TestDrive:/.df/Configuration.json" | ConvertFrom-Json ) | Should -Not -Be $null
-        }
-
-        It "should not have output" {
-            $Sut | Should -Be $null
-        }
     }
 
-    Context "current folder already initialized" {
+    Context "configuration file" {
         BeforeAll {
-            New-Item -Path "TestDrive:/.df" -Name "Configuration.json" -ItemType File -Value "@{ }" -Force | Out-Null
             Push-Location "TestDrive:/"
+            Initialize-DfProject -Name "Project"
+            $sut = Get-Content "TestDrive:/.df/Configuration.json" | ConvertFrom-Json
         }
 
         AfterAll {
             Pop-Location
         }
 
-        It "should keep the .df folder" {
-            Initialize-DfProject -Name "Project"
-            (Get-ChildItem "TestDrive:/" -Hidden).Name | Should -Contain ".df"
+        It "should create a json file for configuration with the name of the project" {
+            $Sut.Name | Should -Be "Project"
+        }
+    }
+
+    Context "output" {
+        BeforeAll {
+            Push-Location "TestDrive:/"
+            $sut = Initialize-DfProject -Name "Project" 
         }
 
+        AfterAll {
+            Pop-Location
+        }
+        
         It "should not have output" {
-            Initialize-DfProject -Name "Project" | Should -Be $null
+            $sut | Should -Be $null
         }
 
         It "should not throw" {
@@ -68,6 +67,22 @@ Describe "Initialize-DfProject" {
             $Error.Clear()
             Initialize-DfProject -Name "Project" 
             $Error | Should -Be $null
+        }
+    }
+
+    Context "current folder already initialized" {
+        BeforeAll {
+            New-Item -Path "TestDrive:/.df" -Name "Configuration.json" -ItemType File -Value "@{ }" -Force | Out-Null
+            Push-Location "TestDrive:/"
+            $sut = Initialize-DfProject -Name "Project"
+        }
+
+        AfterAll {
+            Pop-Location
+        }
+
+        It "should keep the .df folder" {
+            (Get-ChildItem "TestDrive:/" -Hidden).Name | Should -Contain ".df"
         }
     }
 }

@@ -30,7 +30,8 @@ Function Initialize-DfProject {
 
     $ConfigurationFile = Join-Path $ServiceFolder -ChildPath "Configuration.json"
     if (-not (Test-Path $ConfigurationFile)) {
-        New-Item $ConfigurationFile -ItemType File -Value "{}" | Out-Null
+        $Content = @{ Name = $Name } | ConvertTo-Json
+        New-Item $ConfigurationFile -ItemType File -Value $Content | Out-Null
     }
 }
 
