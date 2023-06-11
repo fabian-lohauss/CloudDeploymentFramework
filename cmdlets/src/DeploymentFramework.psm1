@@ -18,7 +18,10 @@ Function Find-DfProjectFolder {
 
 Function Initialize-DfProject {
     [CmdletBinding()]
-    param ( )
+    param (
+        [Parameter( ParameterSetName = "Default", Mandatory)]
+        [string]$Name
+    )
 
     $ServiceFolder = Join-Path $PWD -ChildPath ".df"
     if (-not (Test-Path $ServiceFolder)) {

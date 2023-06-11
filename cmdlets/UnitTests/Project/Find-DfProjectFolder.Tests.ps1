@@ -1,5 +1,5 @@
 BeforeAll {
-    Import-Module $PSScriptRoot/../src/DeploymentFramework.psm1 -force
+    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psm1 -force
 }
 
 Describe "Find-DfProjectFolder" {

@@ -1,13 +1,23 @@
 BeforeAll {
-    Import-Module $PSScriptRoot/../src/DeploymentFramework.psm1 -force
+    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psm1 -Force
 }
 
 Describe "Initialize-DfProject" {
 
+    Context "Parameter set" {
+        It "should have a parameter set named 'Default'" {
+            (Get-Command Initialize-DfProject).ParameterSets.Name | Should -Contain "Default"
+        }
+
+        It "should have a mandatory parameter 'Name'" {
+            (Get-Command Initialize-DfProject) | Should -HaveParameter "Name" -Mandatory
+        }
+    }
+
     Context "current folder not initialized" {
         BeforeAll {
             Push-Location "TestDrive:/"
-            Initialize-DfProject -OutVariable sut
+            Initialize-DfProject -Name "Project" -OutVariable sut
         }
 
         AfterAll {
@@ -42,21 +52,21 @@ Describe "Initialize-DfProject" {
         }
 
         It "should keep the .df folder" {
-            Initialize-DfProject
+            Initialize-DfProject -Name "Project"
             (Get-ChildItem "TestDrive:/" -Hidden).Name | Should -Contain ".df"
         }
 
         It "should not have output" {
-            Initialize-DfProject | Should -Be $null
+            Initialize-DfProject -Name "Project" | Should -Be $null
         }
 
         It "should not throw" {
-            { Initialize-DfProject } | Should -Not -Throw
+            { Initialize-DfProject -Name "Project" } | Should -Not -Throw
         }
 
         It "should not have errors" {
             $Error.Clear()
-            Initialize-DfProject
+            Initialize-DfProject -Name "Project" 
             $Error | Should -Be $null
         }
     }

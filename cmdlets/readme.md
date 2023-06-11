@@ -1,8 +1,6 @@
 
 ```pwsh
-Initialize-DfProject -Name "Demo" 
--Library ../Library -Environment "dev" 
- "dev" -CurrentSubscription
+Initialize-DfProject -Name "Demo" -Library ../Library -Environment "dev" -CurrentSubscription
 New-DfService -Name "shared" | Add-DfComponent -Name "KeyVault" -Latest -AllowPreRelease
 Deploy-DfService "shared" -Latest -AllowPreRelease
 ```
