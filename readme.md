@@ -17,6 +17,9 @@ load balancer backends are deployed to the stamp resource groups
 
 [Cmdlets](cmdlets/readme.md)
 
+git config --global user.email "fabianl@microsoft.com"
+git config --global user.name "Fabian Lohauß"
+
 az extension add --upgrade -n bastion
 az config set core.allow_broker=true
 az account clear
