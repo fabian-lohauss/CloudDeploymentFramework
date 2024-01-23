@@ -17,6 +17,7 @@ load balancer backends are deployed to the stamp resource groups
 
 [Cmdlets](cmdlets/readme.md)
 
+```pwsh
 git config --global user.name $env:UserName
 git config --global user.email $env:UserEmail
 
@@ -25,3 +26,4 @@ az config set core.allow_broker=true
 az account clear
 az login
 Get-AzVm -Name DC01 | ForEach-Object {  az network bastion rdp --resource-group $_.Tags.DfBastionResourceGroup --name $_.Tags.DfBastionName --target-resource-id $_.id }
+```
