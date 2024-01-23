@@ -25,7 +25,8 @@ Function Initialize-DfProject {
 
     $ServiceFolder = Join-Path $PWD -ChildPath ".df"
     if (-not (Test-Path $ServiceFolder)) {
-        New-Item -Path $ServiceFolder -ItemType Directory | Out-Null
+        $Folder = New-Item -Path $ServiceFolder -ItemType Directory 
+        [System.IO.File]::SetAttributes($Folder.FullName, [System.IO.FileAttributes]::Directory -band [System.IO.FileAttributes]::Hidden)
     }
 
     $ConfigurationFile = Join-Path $ServiceFolder -ChildPath "Configuration.json"
