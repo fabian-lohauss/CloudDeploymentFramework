@@ -21,7 +21,7 @@ Describe "New-DfComponent" {
         }
 
         It "should have the <PropertyName>=<ExpectedValue>" -TestCases @(
-            @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/Components/Something/v1.0" }
+            @{ PropertyName = "Path"; ExpectedValue = ("TestDrive:", "Components", "Something", "v1.0" -join [System.IO.Path]::DirectorySeparatorChar) }
             @{ PropertyName = "Name"; ExpectedValue = "Something" }
             @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease" }
             @{ PropertyName = "PreRelease"; ExpectedValue = $true }

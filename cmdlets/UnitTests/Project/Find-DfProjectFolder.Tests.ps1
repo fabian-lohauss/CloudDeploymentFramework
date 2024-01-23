@@ -34,9 +34,9 @@ Describe "Find-DfProjectFolder" {
     }
 
     Context "no project folder <GivenFolders>" -ForEach @(
-        @{ GivenFolders = @(); GivenWorkingDirectory = "TestDrive:/"; ExpectedMessage = "Failed to find DeploymentFramework project folder in 'TestDrive:/'" }
-        @{ GivenFolders = @("TestDrive:/SomeFolder", "TestDrive:/OtherFolder/.df"); GivenWorkingDirectory = "TestDrive:/SomeFolder"; ExpectedMessage = "Failed to find DeploymentFramework project folder in 'TestDrive:/SomeFolder'" }
-        @{ GivenFolders = @("TestDrive:/SomeFolder/AFolder"); GivenWorkingDirectory = "TestDrive:/SomeFolder/AFolder"; ExpectedMessage = "Failed to find DeploymentFramework project folder in 'TestDrive:/SomeFolder/AFolder'" }
+        @{ GivenFolders = @(); GivenWorkingDirectory = "TestDrive:/"; ExpectedMessage = ("Failed to find DeploymentFramework project folder in '{0}'" -f ("TestDrive:", "" -join [System.IO.Path]::DirectorySeparatorChar)) }
+        @{ GivenFolders = @("TestDrive:/SomeFolder", "TestDrive:/OtherFolder/.df"); GivenWorkingDirectory = "TestDrive:/SomeFolder"; ExpectedMessage =  ("Failed to find DeploymentFramework project folder in '{0}'" -f ("TestDrive:", "SomeFolder" -join [System.IO.Path]::DirectorySeparatorChar)) }
+        @{ GivenFolders = @("TestDrive:/SomeFolder/AFolder"); GivenWorkingDirectory = "TestDrive:/SomeFolder/AFolder"; ExpectedMessage = ("Failed to find DeploymentFramework project folder in '{0}'" -f ("TestDrive:", "SomeFolder", "AFolder" -join [System.IO.Path]::DirectorySeparatorChar)) }
     ) {
         BeforeEach {
             foreach ($GivenFolder in $GivenFolders) {

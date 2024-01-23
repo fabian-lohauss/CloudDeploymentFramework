@@ -21,7 +21,7 @@ Describe "Initialize-DfProject" {
         }
 
         It "should create the .df folder" {
-            (Get-ChildItem "TestDrive:/" -Hidden).Name | Should -Contain ".df"
+            (Get-ChildItem "TestDrive:/" -Directory).Name | Should -Contain ".df"
         }
 
         It "should create the configuration file" {
@@ -82,7 +82,7 @@ Describe "Initialize-DfProject" {
         }
 
         It "should keep the .df folder" {
-            (Get-ChildItem "TestDrive:/" -Hidden).Name | Should -Contain ".df"
+            (Get-ChildItem "TestDrive:/" -Directory).Name | Should -Contain ".df"
         }
     }
 }
