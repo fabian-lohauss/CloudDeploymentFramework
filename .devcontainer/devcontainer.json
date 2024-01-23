@@ -3,7 +3,9 @@
 {
 	"name": "DeploymentFramework",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "ghcr.io/fabian-lohauss/df-devcontainer:latest",
+	"build": {
+		"dockerfile": "./Dockerfile"
+	},
 	"features": { 
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/devcontainers/features/dotnet:1": {},
