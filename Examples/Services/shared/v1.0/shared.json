@@ -6,6 +6,6 @@
     }
   ],
   "Name": "shared",
-  "PreRelease": true,
-  "Version": "1.0-PreRelease"
+  "PreRelease": false,
+  "Version": "1.0"
 }
