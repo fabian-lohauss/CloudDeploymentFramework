@@ -107,13 +107,17 @@ function New-DfComponent {
 function Add-DfEnvironment {
     [CmdletBinding()]
     param (
+        [Parameter(Mandatory)]
         [string]$Name,
-        [string]$Subscription
+
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Alias("Subscription")]
+        [string]$Id
     )
     
     $ConfigurationFile = Join-Path (Get-DfProject).Path -ChildPath ".df/Configuration.json"
     $Config = Get-Content $ConfigurationFile | ConvertFrom-Json -AsHashtable
-    $Config.Environment = @{ $Name = @{ Subscription = $Subscription } }
+    $Config.Environment = @{ $Name = @{ Subscription = $Id } }
     $Config | ConvertTo-Json | Out-File $ConfigurationFile
 }
 
