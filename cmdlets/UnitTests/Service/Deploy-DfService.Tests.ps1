@@ -29,7 +29,7 @@ Describe "Deploy-DfService" {
 
         It "should deploy the bicep file" {
             Deploy-DfService "aService" "2.0"
-            Should -Invoke New-AzDeployment -ParameterFilter { ($Location -eq "westeurope") -and ($TemplateFile -eq "TestDrive:/Service/aService/v2.0/aService.bicep") } -ModuleName DeploymentFramework
+            Should -Invoke New-AzDeployment -ParameterFilter { ($Location -eq "westeurope") -and ($TemplateFile -eq ("TestDrive:", "Service", "aService", "v2.0", "aService.bicep" -join [System.IO.Path]::DirectorySeparatorChar) ) } -ModuleName DeploymentFramework
         }
 
         It "should deploy the component" {

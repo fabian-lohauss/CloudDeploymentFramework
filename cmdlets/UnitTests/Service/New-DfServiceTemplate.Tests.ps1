@@ -39,7 +39,7 @@ Describe "New-DfServiceTemplate" {
 
         It "should have value '<PropertyName>=<ExpectedValue>'" -TestCases @(
             @{ PropertyName = "Name"; ExpectedValue = "AService" }
-            @{ PropertyName = "Path"; ExpectedValue = "TestDrive:/Services/AService/v1.0" }
+            @{ PropertyName = "Path"; ExpectedValue = ("TestDrive:", "Services", "AService", "v1.0" -join [System.IO.Path]::DirectorySeparatorChar)}
             @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease" } 
             @{ PropertyName = "PreRelease"; ExpectedValue = $true } 
         ) {

@@ -4,14 +4,14 @@ Function Find-DfProjectFolder {
     param ( )
 
     $CurrentFolder = $pwd
-    $ServiceFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
+    $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
 
-    while (-not $ServiceFolderFound) {
+    while (-not $ProjectFolderFound) {
         $CurrentFolder = Split-Path $CurrentFolder -Parent
         if ([string]::IsNullOrEmpty($CurrentFolder)) {
             throw ("Failed to find DeploymentFramework project folder in '{0}'" -f $pwd)
         }
-        $ServiceFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
+        $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
     }
     return Get-Item $CurrentFolder
 }
@@ -25,7 +25,8 @@ Function Initialize-DfProject {
 
     $ServiceFolder = Join-Path $PWD -ChildPath ".df"
     if (-not (Test-Path $ServiceFolder)) {
-        New-Item -Path $ServiceFolder -ItemType Directory | Out-Null
+        $Folder = New-Item -Path $ServiceFolder -ItemType Directory 
+        [System.IO.File]::SetAttributes($Folder.FullName, [System.IO.FileAttributes]::Directory -band [System.IO.FileAttributes]::Hidden)
     }
 
     $ConfigurationFile = Join-Path $ServiceFolder -ChildPath "Configuration.json"
@@ -106,13 +107,17 @@ function New-DfComponent {
 function Add-DfEnvironment {
     [CmdletBinding()]
     param (
+        [Parameter(Mandatory)]
         [string]$Name,
-        [string]$Subscription
+
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Alias("Subscription")]
+        [string]$Id
     )
     
     $ConfigurationFile = Join-Path (Get-DfProject).Path -ChildPath ".df/Configuration.json"
     $Config = Get-Content $ConfigurationFile | ConvertFrom-Json -AsHashtable
-    $Config.Environment = @{ $Name = @{ Subscription = $Subscription } }
+    $Config.Environment = @{ $Name = @{ Subscription = $Id } }
     $Config | ConvertTo-Json | Out-File $ConfigurationFile
 }
 
