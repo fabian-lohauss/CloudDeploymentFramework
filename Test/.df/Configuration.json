@@ -1,0 +1,8 @@
+{
+  "Name": "Demo",
+  "Environment": {
+    "dev": {
+      "Subscription": "5577d40d-6f47-438f-bdb2-72d19a4c304e"
+    }
+  }
+}

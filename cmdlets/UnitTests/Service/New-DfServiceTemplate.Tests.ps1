@@ -1,5 +1,5 @@
 BeforeAll {
-    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psm1 -Force
+    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psd1 -Force
 }
 
 

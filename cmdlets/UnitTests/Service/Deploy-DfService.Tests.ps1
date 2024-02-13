@@ -1,5 +1,5 @@
 BeforeAll {
-    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psm1 -Force
+    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psd1 -Force
 }
 
 Describe "Deploy-DfService" {
@@ -9,18 +9,18 @@ Describe "Deploy-DfService" {
     }
 
     Context "Parameterset" {
-        It "should have a '<ExpectedParameter>' parameter" -TestCases @(
-            @{ ExpectedParameter = 'Name' }
-            @{ ExpectedParameter = 'Version' }
+        It "should have a '<ExpectedParameter.ParameterName>' parameter" -TestCases @(
+            @{ ExpectedParameter = @{ HaveParameter = $true; ParameterName = 'Name'; Mandatory = $true } }
+            @{ ExpectedParameter = @{ HaveParameter = $true; ParameterName = 'Version'; Mandatory = $true } }
         ) {
-            Get-Command Deploy-DfService | Should -HaveParameter $ExpectedParameter
+            Get-Command Deploy-DfService | Should @ExpectedParameter
         }
     }
 
     Context "happy path" {
         BeforeAll {
             Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ ServicesPath = "TestDrive:/Service"; ComponentsPath = "TestDrive:/Component" } } -ModuleName DeploymentFramework
-            Mock Import-DfServiceTemplate { return [PSCustomObject]@{ Component = @([PSCustomObject]@{ Name = "aComponent"; Version = "1.0" } )} } -ModuleName DeploymentFramework
+            Mock Import-DfServiceTemplate { return [PSCustomObject]@{ Component = @([PSCustomObject]@{ Name = "aComponent"; Version = "1.0" } ) } } -ModuleName DeploymentFramework
             Mock Deploy-DfComponent { } -ModuleName DeploymentFramework
             
             $ExpectedComponentDeploymentParameter = ([ScriptBlock]::Create('($ResourceGroupName -eq "aService-rg") -and ($TemplateFile -eq (Get-Item "TestDrive:/Component/aComponent/v1.0/main.bicep").FullName)'))

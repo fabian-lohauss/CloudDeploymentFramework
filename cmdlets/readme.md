@@ -1,22 +1,21 @@
 
 ```pwsh
 Initialize-DfProject -Name "Demo" -Library ../Library -Environment "dev" -CurrentSubscription
-New-DfService -Name "shared" | Add-DfComponent -Name "KeyVault" -Latest -AllowPreRelease
-Deploy-DfService "shared" -Latest -AllowPreRelease
+New-DfService -Name "shared" | Add-DfComponent -Name "KeyVault" -Latest 
+Deploy-DfService "shared" -Environment "dev" -Latest -AllowPreRelease
 ```
 
 ```pwsh
 Initialize-DfProject -Name "Demo" | Add-DfEnvironment -Name "dev" -CurrentSubscription
-Add-DfConfiguration -Name "SharedKeyvaultName" -Value "{{ Service.ResourceGroupHash }}-kv"
-New-DfComponent -Name "KeyVault" -Type PowerShell -Content @"
-param SharedKeyvaultName string
+New-DfComponent "keyvault" | New-Item -Name "keyvault.bicep" -Value @"
+param name string = 'a${uniqueString(resourceGroup().id)}-kv'
 param location string = resourceGroup().location
 param tenant string = subscription().tenantId
 
 resource kv 'Microsoft.KeyVault/vaults@2022-07-01' = { name: name, location: location, properties: { sku: { family: 'A', name: 'premium' }, tenantId: tenant } }
-"@
-New-DfService -Name "shared" -Environment "dev" | Add-DfComponent "KeyVault" -Latest -AllowPreRelease
-Deploy-DfService "shared" -Latest -AllowPreRelease
+"@ | Out-Null
+New-DfService -Name "shared" | Add-DfComponent "KeyVault" 
+Deploy-DfService "shared" -Environment "dev" -Latest -AllowPreRelease
 ```
 
 ```pwsh

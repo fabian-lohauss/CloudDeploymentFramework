@@ -1,5 +1,5 @@
 BeforeAll {
-    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psm1 -Force
+    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psd1 -Force
 }
 
 Describe "Add-DfEnvironment" {
@@ -11,6 +11,14 @@ Describe "Add-DfEnvironment" {
     Context "parameterset" {
         It "should have mandatory parameter 'name'" {
             Get-Command Add-DfEnvironment | Should -HaveParameter Name -Mandatory
+        }
+
+        It "should have mandatory parameter 'id'" {
+            Get-Command Add-DfEnvironment | Should -HaveParameter Id -Mandatory -InParameterSet UseSubscription
+        }
+
+        It "should have parameter CurrentAzureContext" {
+            Get-Command Add-DfEnvironment | Should -HaveParameter CurrentAzureContext -Mandatory -InParameterSet UseCurrentAzureContext
         }
     }
 
@@ -27,6 +35,18 @@ Describe "Add-DfEnvironment" {
             [PSCustomObject]@{ Id = "123-456-789" } | Add-DfEnvironment -Name "dev"
             $Config = (Get-Content "TestDrive:/.df/Configuration.json" | ConvertFrom-Json)
             $Config.Environment.dev.Subscription | Should -Be "123-456-789"
+        }
+    }
+
+    Context "with CurrentAzureContext" {
+        BeforeAll {
+            Mock Get-AzContext { return @{ Subscription = @{ Id= "123-456" } } } -ModuleName DeploymentFramework
+        }
+
+        It "should add the environment to the configuration file" {
+            Add-DfEnvironment -Name "dev" -CurrentAzureContext
+            $Config = (Get-Content "TestDrive:/.df/Configuration.json" | ConvertFrom-Json)
+            $Config.Environment.dev.Subscription | Should -Be "123-456"
         }
     }
 }

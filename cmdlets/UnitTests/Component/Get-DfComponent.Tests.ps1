@@ -1,5 +1,5 @@
 BeforeAll {
-    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psm1 -Force
+    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psd1 -Force
 }
 
 Describe "Get-DfComponent" {
@@ -12,7 +12,8 @@ Describe "Get-DfComponent" {
         It "should return the component" {
             $sut = Get-DfComponent
             $sut.Name | Should -Be "TheComponent"
-            $sut.Version | Should -Be "1.0"
+            $sut.Version | Should -Be "1.0" 
+            $sut.Path | Should -Be (Resolve-Path "TestDrive:/Components/TheComponent/v1.0").ProviderPath
         }
     }
 
