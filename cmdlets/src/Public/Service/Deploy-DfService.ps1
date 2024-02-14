@@ -11,6 +11,10 @@ function Deploy-DfService {
 
     Write-Verbose ("Deploying service {0} v{1}" -f $Name, $Version)
 
+    if (-not (Test-DfContext)) {
+        throw "You are not logged in to Azure. Run Connect-DfEnvironment to log in."
+    }
+    
     $ProjectConfiguration = Get-DfProject 
     $ServiceFolder = Join-Path $ProjectConfiguration.ServicesPath -ChildPath $Name -AdditionalChildPath ("v{0}" -f $Version)
 
