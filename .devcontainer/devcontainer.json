@@ -12,8 +12,8 @@
 		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
 		"ghcr.io/devcontainers/features/powershell:1": {},
 		"ghcr.io/devcontainers/features/terraform:1": {},
-		"ghcr.io/rchaganti/vsc-devcontainer-features/azurebicep:1": {} //,
-		//"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+		"ghcr.io/rchaganti/vsc-devcontainer-features/azurebicep:1": {},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
 	"customizations": {
 		"vscode": {
