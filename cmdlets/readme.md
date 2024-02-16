@@ -6,21 +6,22 @@ Deploy-DfService "shared" -Environment "dev" -Latest -AllowPreRelease
 ```
 
 ```pwsh
-Initialize-DfProject -Name "Demo" | Add-DfEnvironment -Name "dev" -CurrentSubscription
+Initialize-DfProject -Name "Demo"
 New-DfComponent "storage" -Type Bicep | New-Item -Value @'
+param location string = resourceGroup().location
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: 'stor${uniqueString(resourceGroup().id)}'
-  location: resourceGroup().location, sku: { name: 'Standard_LRS' }, kind: 'StorageV2'
+  location: location, sku: { name: 'Standard_LRS' }, kind: 'StorageV2'
 }
 '@ | Out-Null
 
-New-DfServiceTemplate -Name "shared" | Add-DfComponent "KeyVault" 
+New-DfServiceTemplate -Name "shared" | Add-DfComponent "storage" 
 Deploy-DfService "shared" -Version 1.0
 ```
 
 ```pwsh
 Initialize-DfProject | Add-DfEnvironment "dev" -Subscription (Get-AzSubscription).Id 
-New-DfComponent "keyvault" | New-Item -Name "main.bicep" -Value @"
+New-DfComponent "keyvault" -Type Bicep | New-Item -Value @"
 param name string = 'a${uniqueString(resourceGroup().id)}-kv'
 param location string = resourceGroup().location
 param tenant string = subscription().tenantId

@@ -3,22 +3,31 @@ BeforeAll {
 }
 
 Describe "Get-DfComponent" {
+    Context "Parameter set" {
+        It "should have parameter '<ExpectedParameter>'" -TestCases @(
+            @{ ExpectedParameter = "Name" }
+            @{ ExpectedParameter = "Version" }
+        ) {
+            Get-Command Get-DfComponent  | Should -HaveParameter $ExpectedParameter 
+        }
+    }
+    
     Context "single component" {
         BeforeAll {
-            New-Item "TestDrive:/Components/TheComponent/v1.0/TheComponent.bicep" -ItemType File -Force | Out-Null
+            New-Item "TestDrive:/Components/AComponent/v2.0/AComponent.bicep" -ItemType File -Force | Out-Null
             Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ ComponentsPath = "TestDrive:/Components" } } -ModuleName DeploymentFramework -Verifiable
         }
         
         It "should return the component" {
             $sut = Get-DfComponent
-            $sut.Name | Should -Be "TheComponent"
-            $sut.Version | Should -Be "1.0" 
-            $sut.Path | Should -Be (Resolve-Path "TestDrive:/Components/TheComponent/v1.0/TheComponent.bicep").ProviderPath
+            $sut.Name | Should -Be "AComponent"
+            $sut.Version | Should -Be "2.0" 
+            $sut.Path | Should -Be (Resolve-Path "TestDrive:/Components/AComponent/v2.0/AComponent.bicep").ProviderPath
             $sut.Type | Should -Be "Bicep"
         }
     }
 
-    Context "multiple files" {
+    Context "multiple components" {
         BeforeAll {
             New-Item "TestDrive:/Components/TheComponent/v1.0/TheComponent.bicep" -ItemType File -Force | Out-Null
             New-Item "TestDrive:/Components/TheComponent/v1.1/TheComponent.bicep" -ItemType File -Force | Out-Null
@@ -44,17 +53,48 @@ Describe "Get-DfComponent" {
     Context "filter by name" {
         BeforeAll {
             New-Item "TestDrive:/Components/TheComponent/v1.0/TheComponent.bicep" -ItemType File -Force | Out-Null
+            New-Item "TestDrive:/Components/TheComponent/v1.1/TheComponent.bicep" -ItemType File -Force | Out-Null
             New-Item "TestDrive:/Components/OtherComponent/v1.1/OtherComponent.bicep" -ItemType File -Force | Out-Null
             Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ ComponentsPath = "TestDrive:/Components" } } -ModuleName DeploymentFramework -Verifiable
         }
         
         It "should return the component" -TestCases @(
-            @{ GivenName = "TheComponent"; ExpectedName = "TheComponent"; ExpectedVersion = "1.0" }
+            @{ GivenName = "TheComponent"; ExpectedName = @("TheComponent", "TheComponent"); ExpectedVersion = @("1.0", "1.1") }
             @{ GivenName = "OtherComponent"; ExpectedName = "OtherComponent"; ExpectedVersion = "1.1" }
         ) {
             $sut = Get-DfComponent $GivenName
             $sut.Name | Should -Be $ExpectedName
             $sut.Version | Should -Be $ExpectedVersion
+        }
+    }
+
+    Context "filter by name and version" {
+        BeforeAll {
+            New-Item "TestDrive:/Components/TheComponent/v1.0/TheComponent.bicep" -ItemType File -Force | Out-Null
+            New-Item "TestDrive:/Components/TheComponent/v1.1/TheComponent.bicep" -ItemType File -Force | Out-Null
+            New-Item "TestDrive:/Components/OtherComponent/v1.1/OtherComponent.bicep" -ItemType File -Force | Out-Null
+            Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ ComponentsPath = "TestDrive:/Components" } } -ModuleName DeploymentFramework -Verifiable
+        }
+        
+        It "should return the component" -TestCases @(
+            @{ GivenName = "TheComponent"; GivenVersion = "1.0"; ExpectedName = "TheComponent"; ExpectedVersion = "1.0" }
+            @{ GivenName = "TheComponent"; GivenVersion = "1.1"; ExpectedName = "TheComponent"; ExpectedVersion = "1.1" }
+            @{ GivenName = "OtherComponent"; GivenVersion = "1.1"; ExpectedName = "OtherComponent"; ExpectedVersion = "1.1" }
+        ) {
+            $sut = Get-DfComponent -Name $GivenName -Version $GivenVersion
+            $sut.Name | Should -Be $ExpectedName
+            $sut.Version | Should -Be $ExpectedVersion
+        }
+    }
+
+    Context "no bicep file" {
+        BeforeAll {
+            New-Item "TestDrive:/Components" -ItemType File -Force | Out-Null
+            Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ ComponentsPath = "TestDrive:/Components" } } -ModuleName DeploymentFramework -Verifiable
+        }
+        
+        It "should throw an error" {
+            { Get-DfComponent -Name "TheComponent" -Version "1.0" } | Should -Throw "Failed to find component bicep file 'TestDrive:/Components/TheComponent/v1.0/TheComponent.bicep'"
         }
     }
 }
