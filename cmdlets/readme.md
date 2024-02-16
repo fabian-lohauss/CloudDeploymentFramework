@@ -7,13 +7,13 @@ Deploy-DfService "shared" -Environment "dev" -Latest -AllowPreRelease
 
 ```pwsh
 Initialize-DfProject -Name "Demo" | Add-DfEnvironment -Name "dev" -CurrentSubscription
-New-DfComponent "keyvault" | New-Item -Name "keyvault.bicep" -Value @'
-param name string = 'a${uniqueString(resourceGroup().id)}-kv'
-param location string = resourceGroup().location
-param tenant string = subscription().tenantId
-
-resource kv 'Microsoft.KeyVault/vaults@2022-07-01' = { name: name, location: location, properties: { sku: { family: 'A', name: 'premium' }, tenantId: tenant, enableRbacAuthorization: true } }
+New-DfComponent "storage" -Type Bicep | New-Item -Value @'
+resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+  name: 'stor${uniqueString(resourceGroup().id)}'
+  location: resourceGroup().location, sku: { name: 'Standard_LRS' }, kind: 'StorageV2'
+}
 '@ | Out-Null
+
 New-DfServiceTemplate -Name "shared" | Add-DfComponent "KeyVault" 
 Deploy-DfService "shared" -Version 1.0
 ```

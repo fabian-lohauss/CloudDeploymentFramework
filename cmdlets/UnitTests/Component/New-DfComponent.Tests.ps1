@@ -8,12 +8,16 @@ Describe "New-DfComponent" {
         It "should have a mandatory name parameter" {
             Get-Command -Name New-DfComponent | Should -HaveParameter Name -Mandatory
         }            
+
+        It "should have a mandatory type parameter" {
+            Get-Command -Name New-DfComponent | Should -HaveParameter Type -Mandatory 
+        }            
     }
 
     Context "happy path" {
         BeforeAll {
             Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ ComponentsPath = "TestDrive:/Components" } } -ModuleName DeploymentFramework -Verifiable
-            $sut = New-DfComponent "Something"
+            $sut = New-DfComponent "Something" -Type Bicep
         }
 
         It "should return only the component" {
@@ -21,13 +25,13 @@ Describe "New-DfComponent" {
         }
 
         It "should have the <PropertyName>=<ExpectedValue>" -TestCases @(
-            @{ PropertyName = "Path"; ExpectedValue = ("TestDrive:", "Components", "Something", "v1.0" -join [System.IO.Path]::DirectorySeparatorChar) }
+            @{ PropertyName = "Path"; ExpectedValue = ("TestDrive:", "Components", "Something", "v1.0", "Something.bicep" -join [System.IO.Path]::DirectorySeparatorChar) }
             @{ PropertyName = "Name"; ExpectedValue = "Something" }
             @{ PropertyName = "Version"; ExpectedValue = "1.0-PreRelease" }
             @{ PropertyName = "PreRelease"; ExpectedValue = $true }
         ) {
             ($sut | Get-Member -MemberType NoteProperty).Name | Should -Contain $PropertyName
-            $sut.$PropertyName | Should -Be $ExpectedValue
+            $sut.$PropertyName | Should -BeExactly $ExpectedValue
             Should -InvokeVerifiable
         }
 

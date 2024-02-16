@@ -13,7 +13,8 @@ function Get-DfComponent {
                 $Properties = @{ 
                     Name    = $ComponentFolder.BaseName; 
                     Version = ($VersionFolder.BaseName -replace "v", "") 
-                    Path    = $VersionFolder.FullName
+                    Path    = ($VersionFolder | Get-ChildItem ).FullName
+                    Type    = "Bicep"
                 }
                 New-Object -TypeName PSCustomObject -Property $Properties
             }        
