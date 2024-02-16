@@ -28,7 +28,7 @@ Describe "Deploy-DfService" {
             Mock New-AzResourceGroupDeployment { } -ParameterFilter $ExpectedComponentDeploymentParameter -ModuleName DeploymentFramework 
         }
 
-        It "should deploy the bicep file" {
+        It "should deploy the service template" {
             Deploy-DfService "aService" "2.0"
             Should -Invoke New-AzDeployment -ParameterFilter { ($Location -eq "westeurope") -and ($TemplateFile -eq ("TestDrive:", "Service", "aService", "v2.0", "aService.bicep" -join [System.IO.Path]::DirectorySeparatorChar) ) } -ModuleName DeploymentFramework
         }
