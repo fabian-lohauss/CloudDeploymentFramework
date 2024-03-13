@@ -1,22 +1,51 @@
+enum AdoScope {
+    None = 0
+    PackagingRead
+    PackagingWrite
+    ProjectRead
+    CodeRead
+}
+
 function New-DfAdoPersonalAccessToken {
     [CmdletBinding()]
     param(
-        [string]$organizationName,
-        [string]$displayName
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [string]$OrganizationName,
+
+        [Parameter(Mandatory)]
+        [string]$DisplayName,
+
+        [Parameter(Mandatory)]
+        [AdoScope[]]$Scope,
+
+        [string]$KeyVaultName
     )
 
-    $validTo = (Get-Date).AddDays(30).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 
     try {
         $BearerToken = New-DfBearerToken
-    }
-    catch {
-        throw "Failed to create personal access token: $_"
+    } catch {
+        throw [Exception]::new("Failed to create personal access token", $_.Exception)
     }
 
+    $scopeMap = @{
+        PackagingRead = 'vso.packaging'
+        PackagingWrite = 'vso.packaging_write'
+        ProjectRead = 'vso.project'
+        CodeRead = 'vso.code'
+        CodeWrite = 'vso.code_write'
+    }
+
+    $selectedScopes = $Scope | Where-Object { $_ -ne 'None' } | ForEach-Object { $scopeMap[$_.ToString()] }
+    if (-not $selectedScopes) {
+        throw "No scopes selected. At least one scope must be specified."
+    }
+    $PatScope = $selectedScopes -join ' '
+
+    $validTo = (Get-Date).AddDays(30).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
     $tokenBody = @{
         displayName = $displayName
-        scope = "app_token.manage"
+        scope = $PatScope
         validTo = $validTo
         allOrgs = $false
     }
@@ -30,5 +59,12 @@ function New-DfAdoPersonalAccessToken {
     if ($JsonResult -match "Azure DevOps Services \| Sign In") {
         throw "Failed to create personal access token: Sign in required. Run Connect-AzAccount to login."
     }
-    return [PSCustomObject]$JsonResult.patToken
+    $PatTokenDetails = $JsonResult.patToken
+    # $PatToken = $PatTokenDetails.token
+    # $validFrom = [datetime]::Parse($PatTokenDetails.validFrom)
+    # $validTo = [datetime]::Parse($PatTokenDetails.validTo)
+
+    # $secretValue = ConvertTo-SecureString $PatToken -AsPlainText -Force
+    # Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $displayName -SecretValue $secretValue -NotBefore $validFrom -Expires $validTo
+    return [PSCustomObject]$PatTokenDetails
 }

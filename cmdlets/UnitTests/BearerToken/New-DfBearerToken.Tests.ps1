@@ -7,17 +7,17 @@ Describe "New-DfBearerToken" {
         Mock Get-AzAccessToken { throw "should be mocked" } -ModuleName DeploymentFramework -Verifiable
     }
 
-    Context "when not logged in" {
+    Context 'non-terminating error in Get-AzAccessToken ' {
         BeforeAll {
-            Mock Get-AzAccessToken { throw "Get-AzAccessToken: Run Connect-AzAccount to login." } -ModuleName DeploymentFramework -Verifiable
+            Mock Get-AzAccessToken { if ("Stop" -eq $PesterBoundParameters.ErrorAction) { throw "non-terminating error" } } -ModuleName DeploymentFramework 
         }
-
-        It "should throw" {
-            { New-DfBearerToken } | Should -Throw "Failed to get bearer token: Get-AzAccessToken: Run Connect-AzAccount to login."
+    
+        It 'Correctly processes non-terminating error from Get-AzAccessToken as exception message' {
+            { New-DfBearerToken } | Should -Throw "Failed to get bearer token: non-terminating error"
         }
     }
 
-    Context "other error" {
+    Context "other exception" {
         BeforeAll {
             Mock Get-AzAccessToken { throw "other error" } -ModuleName DeploymentFramework -Verifiable
         }

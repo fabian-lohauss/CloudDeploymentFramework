@@ -2,8 +2,23 @@ BeforeAll {
     Import-Module $PSScriptRoot/../../src/DeploymentFramework.psd1 -Force
 }
 
+
 Describe "New-DfAdoPersonalAccessToken" {
     BeforeAll {
+    }
+
+    Context "Parameterset" {
+        It "should have mandator paramater OrganizationName " {
+            Get-Command New-DfAdoPersonalAccessToken | Should -HaveParameter "OrganizationName" -Mandatory
+        }
+
+        It "should have mandator paramater DisplayName " {
+            Get-Command New-DfAdoPersonalAccessToken | Should -HaveParameter "DisplayName" -Mandatory
+        }
+
+        It "should have mandator paramater scope" {
+            Get-Command New-DfAdoPersonalAccessToken | Should -HaveParameter "Scope" -Mandatory
+        }
     }
 
     Context "when not logged in" {
@@ -12,7 +27,17 @@ Describe "New-DfAdoPersonalAccessToken" {
         }
 
         It "should throw" {
-            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" } | Should -Throw "Failed to create personal access token: New-DfBearerToken: Run Connect-AzAccount to login."
+            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -Scope "none" } | Should -Throw "Failed to create personal access token"
+        }
+
+        It "should have the New-DfBearerToken as inner exception" {
+            try {
+                New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -Scope "none"
+                throw "expected exception not thrown"
+            }
+            catch {
+                $_.Exception.InnerException.Message | Should -Be "New-DfBearerToken: Run Connect-AzAccount to login."
+            }
         }
     }
 
@@ -32,7 +57,7 @@ Describe "New-DfAdoPersonalAccessToken" {
         }
 
         It "should throw" {
-            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" } | Should -Throw "Failed to create personal access token: Sign in required. Run Connect-AzAccount to login."
+            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -Scope PackagingRead } | Should -Throw "Failed to create personal access token: Sign in required. Run Connect-AzAccount to login."
         }
     }
 
@@ -46,7 +71,7 @@ Describe "New-DfAdoPersonalAccessToken" {
         }
 
         It "should throw" {
-            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" } | Should -Throw "TF401444: Please sign-in at least once as 2cc4f755-24fa-4386-b120-80edcf8d499a\\user@something.onmicrosoft.com in a web browser to enable access to the service."
+            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -Scope PackagingRead } | Should -Throw "TF401444: Please sign-in at least once as 2cc4f755-24fa-4386-b120-80edcf8d499a\\user@something.onmicrosoft.com in a web browser to enable access to the service."
         }
     
     }
@@ -61,8 +86,10 @@ Describe "New-DfAdoPersonalAccessToken" {
                 $Result = @{
                     patToken      = @{
                         displayName = $Values.displayName
+                        validFrom   = "2023-12-31T18:38:34.69Z"
                         validTo     = $Values.validTo
                         scope       = $Values.scope
+                        token       = "myNewPatToken"
                     }
                     patTokenError = "none"
                 }
@@ -71,10 +98,10 @@ Describe "New-DfAdoPersonalAccessToken" {
         }
 
         It "should return the result" {
-            $Pat = New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat"
+            $Pat = New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead"
             $Pat.displayName | Should -Be "myNewPat"
             [datetime]($Pat.validTo) | Should -Be ([datetime]"2024-01-31T18:38:34.69Z")
-            $Pat.scope | Should -Be "app_token.manage"
+            $Pat.scope | Should -Be "vso.packaging"
         }
     }
 }
