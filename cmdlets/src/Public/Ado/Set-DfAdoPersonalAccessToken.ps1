@@ -5,7 +5,7 @@ enum AdoScope {
     CodeRead
 }
 
-function New-DfAdoPersonalAccessToken {
+function Set-DfAdoPersonalAccessToken {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -22,10 +22,6 @@ function New-DfAdoPersonalAccessToken {
         [switch]$PassThru
 
     )
-
-    if (Test-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -DisplayName $DisplayName) {
-        throw ("Failed to create new personal access token '{0}': Personal access token already exists" -f $DisplayName)
-    }
 
     $scopeMap = @{
         PackagingRead  = 'vso.packaging'
@@ -50,10 +46,23 @@ function New-DfAdoPersonalAccessToken {
     }
 
     try {
-        $Result = Invoke-DfAdoRestMethod -OrganizationName $OrganizationName -Api "tokens/pats" -Method Post -Body $tokenBody 
+        $ExistingToken = Get-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -DisplayName $DisplayName
+
+        if ($ExistingToken.Count -gt 1) {
+            throw [Exception]::new("There are multiple personal access tokens with the same display name '{0}'" -f $DisplayName)
+        }
+
+        if ($ExistingToken) {
+            $Method = "Put"
+            $tokenBody.authorizationId = $ExistingToken.authorizationId
+        } else {
+            $Method = "Post"
+        }
+
+        $Result = Invoke-DfAdoRestMethod -OrganizationName $OrganizationName -Api "tokens/pats" -Method $Method -Body $tokenBody 
     }
     catch {
-        throw [Exception]::new("Failed to create new personal access token '{0}'" -f $DisplayName, $_.Exception)
+        throw [Exception]::new(("Failed to create or update personal access token '{0}': {1}" -f $DisplayName, $_.Exception.Message), $_.Exception)
     }
 
     $PatTokenDetails = $Result.patToken
