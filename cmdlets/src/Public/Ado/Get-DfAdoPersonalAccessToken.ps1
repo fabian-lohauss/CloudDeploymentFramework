@@ -11,7 +11,7 @@ function Get-DfAdoPersonalAccessToken {
         $Result = Invoke-DfAdoRestMethod -OrganizationName $OrganizationName -Api "tokens/pats" -Method Get 
     }
     catch {
-        throw [Exception]::new("Failed to get personal access token", $_.Exception)
+        throw [Exception]::new(("Failed to get personal access token: {0}" -f $_.Exception.Message), $_.Exception)
     }
     $PatTokens = $Result.PatTokens 
     if (-not [string]::IsNullOrEmpty($DisplayName)) {

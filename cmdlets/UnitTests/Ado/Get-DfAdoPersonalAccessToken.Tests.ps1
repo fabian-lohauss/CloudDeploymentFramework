@@ -90,7 +90,7 @@ Describe "Get-DfAdoPersonalAccessToken" {
         }
 
         It "should throw" {
-            { Get-DfAdoPersonalAccessToken -organizationName "organizationName" } | Should -Throw "Failed to get personal access token"
+            { Get-DfAdoPersonalAccessToken -organizationName "organizationName" } | Should -Throw "Failed to get personal access token: Invoke-DfAdoRestMethod: some exception."
         }
 
         It "should have the Invoke-DfAdoRestMethod as inner exception" {

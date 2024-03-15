@@ -6,7 +6,7 @@ BeforeAll {
 Describe "New-DfAdoPersonalAccessToken" {
     BeforeAll {
         Mock Test-DfAdoPersonalAccessToken { throw "Test-DfAdoPersonalAccessToken should be mocked" } -ModuleName DeploymentFramework -Verifiable
-        Mock Invoke-DfAdoRestMethod { } -ModuleName DeploymentFramework -Verifiable
+        Mock Set-DfAdoPersonalAccessToken { } -ModuleName DeploymentFramework -Verifiable
     }
 
     Context "Parameterset" {
@@ -26,20 +26,20 @@ Describe "New-DfAdoPersonalAccessToken" {
     Context "exception from Invoke-DfAdoRestMethod" {
         BeforeAll {
             Mock Test-DfAdoPersonalAccessToken { return $false } -ModuleName DeploymentFramework -Verifiable
-            Mock Invoke-DfAdoRestMethod { throw "Invoke-DfAdoRestMethod: some exception." } -ModuleName DeploymentFramework -Verifiable
+            Mock Set-DfAdoPersonalAccessToken { throw "Set-DfAdoPersonalAccessToken: some exception." } -ModuleName DeploymentFramework -Verifiable
         }
 
         It "should throw" {
             { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -Scope CodeRead  } | Should -Throw "Failed to create new personal access token 'displayName'"
         }
 
-        It "should have the Invoke-DfAdoRestMethod as inner exception" {
+        It "should have the Set-DfAdoPersonalAccessToken as inner exception" {
             try {
                 New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -Scope PackagingRead
                 throw "expected exception not thrown"
             }
             catch {
-                $_.Exception.InnerException.Message | Should -Be "Invoke-DfAdoRestMethod: some exception."
+                $_.Exception.InnerException.Message | Should -Be "Set-DfAdoPersonalAccessToken: some exception."
             }
         }
     }
@@ -48,19 +48,19 @@ Describe "New-DfAdoPersonalAccessToken" {
         BeforeAll {
             Mock Test-DfAdoPersonalAccessToken { return $false } -ModuleName DeploymentFramework -Verifiable
             Mock Get-Date { return [datetime]"2024-01-01T18:38:34.69Z" } -ModuleName DeploymentFramework -Verifiable
-            Mock Invoke-DfAdoRestMethod {
-                param($Uri, $Method, $Body)
-                $Result = @{
-                    patToken      = @{
-                        displayName = $Body.displayName
-                        validFrom   = "2023-12-31T18:38:34.69Z"
-                        validTo     = $Body.validTo
-                        scope       = $Body.scope
+            Mock Set-DfAdoPersonalAccessToken {
+                param($DisplayName, $Scope)
+                $Result = [PSCustomObject]@{
+                    patToken      = [PSCustomObject]@{
+                        displayName = $displayName
+                        validFrom   = [datetime]"2023-12-31T18:38:34.69Z"
+                        validTo     = [datetime]"2024-01-31T18:38:34.69Z"
+                        scope       = "vso.packaging"
                         token       = "myNewPatToken"
                     }
                     patTokenError = "none"
                 }
-                return $Result
+                return [PSCustomObject]$Result
             } -ModuleName DeploymentFramework -Verifiable
         }
 
@@ -80,7 +80,7 @@ Describe "New-DfAdoPersonalAccessToken" {
     Context "PAT already exists" {
         BeforeAll {
             Mock Test-DfAdoPersonalAccessToken { return $true } -ModuleName DeploymentFramework -Verifiable
-            Mock Invoke-DfAdoRestMethod { throw "should not be called" } -ModuleName DeploymentFramework -Verifiable
+            Mock Set-DfAdoPersonalAccessToken { throw "should not be called" } -ModuleName DeploymentFramework -Verifiable
         }
 
         It "should throw" {
