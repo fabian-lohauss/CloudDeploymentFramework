@@ -64,11 +64,12 @@ Describe "Remove-DfAdoPersonalAccessToken" {
                 $Result = [PSCustomObject]@{
                     PatTokens = [PSCustomObject]@(
                         [PSCustomObject]@{
-                            displayName = "pat1"
-                            validFrom   = "2023-12-31T18:38:34.69Z"
-                            validTo     = "2024-01-01T18:38:34.69Z"
-                            scope       = "CodeRead"
-                            token       = "myPatToken1"
+                            displayName     = "pat1"
+                            validFrom       = "2023-12-31T18:38:34.69Z"
+                            validTo         = "2024-01-01T18:38:34.69Z"
+                            scope           = "CodeRead"
+                            token           = "myPatToken1"
+                            authorizationId = "authorizationId"
                         }
                     )
                 }
@@ -83,7 +84,7 @@ Describe "Remove-DfAdoPersonalAccessToken" {
 
         It "should call Invoke-DfAdoRestMethod" {
             Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName"
-            Assert-MockCalled Invoke-DfAdoRestMethod -Exactly 1 -Scope It -ModuleName DeploymentFramework
+            Assert-MockCalled Invoke-DfAdoRestMethod -Exactly 1 -Scope It -ParameterFilter { $AuthorizationId -eq "authorizationId" }  -ModuleName DeploymentFramework
         }
     }
 

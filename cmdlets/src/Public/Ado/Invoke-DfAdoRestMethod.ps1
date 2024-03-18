@@ -24,7 +24,7 @@ function Invoke-DfAdoRestMethod {
     $BodyAsString = if ($Body) { $Body | ConvertTo-Json } else { $null }
 
     try {
-        if ($AuthorizationId) {
+        if (-not [string]::IsNullOrEmpty($AuthorizationId)) {
             $Parameter = ("authorizationId={0}&" -f $AuthorizationId)
         } 
         else {
