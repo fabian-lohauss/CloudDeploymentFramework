@@ -54,8 +54,8 @@ Describe "Set-DfAdoPersonalAccessToken" {
             Mock Get-Date { return [datetime]"2024-01-01T18:38:34.69Z" } -ModuleName DeploymentFramework -Verifiable
             Mock Invoke-DfAdoRestMethod {
                 param($Uri, $Method, $Body)
-                $Result = @{
-                    patToken      = @{
+                $Result = [PSCustomObject]@{
+                    patToken      = [PSCustomObject]@{
                         displayName = $Body.displayName
                         validFrom   = "2023-12-31T18:38:34.69Z"
                         validTo     = $Body.validTo

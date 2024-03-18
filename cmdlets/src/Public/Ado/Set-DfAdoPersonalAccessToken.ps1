@@ -69,9 +69,9 @@ function Set-DfAdoPersonalAccessToken {
     }
 
     $PatTokenDetails = $Result.patToken
-    $PatTokenDetails.UserName = $UserName
-    $PatTokenDetails.OrganizationName = $OrganizationName
-    
+    $PatTokenDetails | Add-Member -MemberType NoteProperty -Name OrganizationName -Value $OrganizationName -Force
+    $PatTokenDetails | Add-Member -MemberType NoteProperty -Name UserName -Value $UserName -Force   
+
     # $PatToken = $PatTokenDetails.token
     # $validFrom = [datetime]::Parse($PatTokenDetails.validFrom)
     # $validTo = [datetime]::Parse($PatTokenDetails.validTo)
