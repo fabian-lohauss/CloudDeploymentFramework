@@ -74,4 +74,18 @@ remote.origin.url=https://orginadohttppath@dev.azure.com/orginadohttppath/projec
             $config.OrganizationName | Should -BeOfType [string]
         }
     }
+
+    Context "OrganizationName from azure devops repository with usehttppath 2" {
+        BeforeAll {
+            Mock git { return @"
+remote.origin.url=https://org-with-dash-and-httppath@dev.azure.com/org-with-dash-and-httppath/project/_git/project
+"@ } -ModuleName DeploymentFramework -Verifiable
+        }
+
+        It "should return the git organization name" {
+            $config = Get-DfGitConfig
+            $config.OrganizationName | Should -Be "org-with-dash-and-httppath"
+            $config.OrganizationName | Should -BeOfType [string]
+        }
+    }    
 }
