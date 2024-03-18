@@ -8,7 +8,7 @@ enum AdoScope {
 function Set-DfAdoPersonalAccessToken {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [string]$OrganizationName,
 
         [Parameter(Mandatory)]

@@ -1,7 +1,7 @@
 function Test-DfAdoPersonalAccessToken {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [string]$OrganizationName,
 
         [Parameter(Mandatory = $true)]
