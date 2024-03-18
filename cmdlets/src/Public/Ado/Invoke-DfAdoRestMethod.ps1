@@ -10,7 +10,9 @@ function Invoke-DfAdoRestMethod {
         [Parameter(Mandatory)]
         [string]$Method,
 
-        [hashtable]$Body
+        [hashtable]$Body,
+
+        [string]$AuthorizationId
     )
 
     $BearerToken = Get-DfBearerToken
@@ -22,8 +24,14 @@ function Invoke-DfAdoRestMethod {
     $BodyAsString = if ($Body) { $Body | ConvertTo-Json } else { $null }
 
     try {
-        $Uri = ("https://vssps.dev.azure.com/{0}/_apis/{1}?api-version=7.1-preview.1" -f $OrganizationName, $Api)
-        $Result = Invoke-RestMethod -Uri $Uri -Method $Method -Body $BodyAsString -Headers $header
+        if ($AuthorizationId) {
+            $Parameter = ("authorizationId={0}&" -f $AuthorizationId)
+        } 
+        else {
+            $Parameter = ""
+        }
+        $Uri = ("https://vssps.dev.azure.com/{0}/_apis/{1}?{2}api-version=7.1-preview.1" -f $OrganizationName, $Api, $Parameter)
+        $Result = Invoke-RestMethod -Uri $Uri -Method $Method -Body $BodyAsString -Headers $header 
         if ($Result -match "Azure DevOps Services \| Sign In") {
             throw "Sign in required. Run Connect-AzAccount to login."
         }

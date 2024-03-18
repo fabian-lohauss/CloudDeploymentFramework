@@ -21,6 +21,10 @@ Describe "Invoke-DfAdoRestMethod" {
             Get-Command Invoke-DfAdoRestMethod | Should -HaveParameter Body 
         }
 
+        It "should have optional AuthorizationId parameter" {
+            Get-Command Invoke-DfAdoRestMethod | Should -HaveParameter AuthorizationId -Type "string"
+        }
+
     }
     
     Context "sign in popup" {
@@ -85,6 +89,19 @@ Describe "Invoke-DfAdoRestMethod" {
             catch {
                 $_.Exception.InnerException.Message | Should -Be "an exception"
             }
+        }
+    }
+
+
+    Context "AuthorizationId" {
+        BeforeAll {
+            Mock Get-DfBearerToken { return "" } -ModuleName DeploymentFramework -Verifiable
+            Mock Invoke-RestMethod { } -ModuleName DeploymentFramework -Verifiable
+        }
+
+        It "should use the AuthorizationId" {
+            Invoke-DfAdoRestMethod -organizationName "organizationName" -Api "b" -Method Get -AuthorizationId "myToken"
+            Assert-MockCalled Invoke-RestMethod -Exactly 1 -Scope It -ParameterFilter { $Uri -match "\?authorizationId=myToken&" } -ModuleName DeploymentFramework
         }
     }
 }

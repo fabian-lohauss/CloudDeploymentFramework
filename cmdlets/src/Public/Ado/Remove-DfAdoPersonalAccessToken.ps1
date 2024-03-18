@@ -21,13 +21,7 @@ function Remove-DfAdoPersonalAccessToken {
             throw [Exception]::new("There are multiple personal access tokens with the same display name '{0}'" -f $DisplayName)
         }
 
-        $Method = "Delete"
-        $tokenBody = @{
-            displayName     = $displayName
-            authorizationId = $ExistingToken.authorizationId
-        }
-
-        $Result = Invoke-DfAdoRestMethod -OrganizationName $OrganizationName -Api "tokens/pats" -Method $Method -Body $tokenBody 
+        $Result = Invoke-DfAdoRestMethod -OrganizationName $OrganizationName -Api "tokens/pats" -Method "Delete" -AuthorizationId $ExistingToken.PatTokens.authorizationId
     }
     catch {
         throw [Exception]::new(("Failed to remove personal access token '{0}': {1}" -f $DisplayName, $_.Exception.Message), $_.Exception)
