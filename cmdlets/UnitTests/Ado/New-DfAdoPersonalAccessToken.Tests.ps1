@@ -21,6 +21,18 @@ Describe "New-DfAdoPersonalAccessToken" {
         It "should have mandatory paramater scope" {
             Get-Command New-DfAdoPersonalAccessToken | Should -HaveParameter "Scope" -Mandatory
         }
+
+        It "should have optional paramater KeyVaultName" {
+            Get-Command New-DfAdoPersonalAccessToken | Should -HaveParameter "KeyVaultName" -Type String
+        }
+
+        It "should have optional paramater Passthru" {
+            Get-Command New-DfAdoPersonalAccessToken | Should -HaveParameter "Passthru" -Type Switch
+        }
+
+        It "should have optional paramater Force" {
+            Get-Command New-DfAdoPersonalAccessToken | Should -HaveParameter "Force" -Type Switch
+        }
     }
 
     Context "exception from Invoke-DfAdoRestMethod" {
@@ -30,7 +42,7 @@ Describe "New-DfAdoPersonalAccessToken" {
         }
 
         It "should throw" {
-            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -Scope CodeRead  } | Should -Throw "Failed to create new personal access token 'displayName'"
+            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -Scope CodeRead } | Should -Throw "Failed to create new personal access token 'displayName'"
         }
 
         It "should have the Set-DfAdoPersonalAccessToken as inner exception" {
@@ -85,6 +97,28 @@ Describe "New-DfAdoPersonalAccessToken" {
 
         It "should throw" {
             { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" } | Should -Throw "Failed to create new personal access token 'myNewPat': Personal access token already exists"
+        }
+    }
+
+    Context "-force creates new PAT" {
+        BeforeAll {
+            Mock Test-DfAdoPersonalAccessToken { return $true } -ModuleName DeploymentFramework -Verifiable
+            Mock Remove-DfAdoPersonalAccessToken { } -ModuleName DeploymentFramework -Verifiable
+            Mock Set-DfAdoPersonalAccessToken { } -ModuleName DeploymentFramework -Verifiable
+        }
+
+        It "should not throw" {
+            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force } | Should -Not -Throw
+        }
+
+        It "should call Remove-DfAdoPersonalAccessToken" {
+            New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force
+            Assert-MockCalled Remove-DfAdoPersonalAccessToken -Scope It -ParameterFilter { $displayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and $KeyVaultName -eq "TheKeyvault"  } -ModuleName DeploymentFramework
+        }
+
+        It "should call Set-DfAdoPersonalAccessToken" {
+            New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force
+            Assert-MockCalled Set-DfAdoPersonalAccessToken -Scope It -ParameterFilter { $displayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and "PackagingRead" -eq $scope -and $KeyVaultName -eq "TheKeyvault" } -ModuleName DeploymentFramework
         }
     }
 }

@@ -19,12 +19,19 @@ function New-DfAdoPersonalAccessToken {
 
         [string]$KeyVaultName,
 
-        [switch]$PassThru
+        [switch]$PassThru,
+
+        [switch]$Force
 
     )
 
-    if (Test-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -DisplayName $DisplayName) {
-        throw ("Failed to create new personal access token '{0}': Personal access token already exists" -f $DisplayName)
+    if (Test-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -DisplayName $DisplayName -KeyVaultName $KeyVaultName) {
+        if ($Force) {
+            Remove-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -DisplayName $DisplayName -KeyVaultName $KeyVaultName
+        }
+        else {
+            throw ("Failed to create new personal access token '{0}': Personal access token already exists" -f $DisplayName)
+        }
     }
 
     try {

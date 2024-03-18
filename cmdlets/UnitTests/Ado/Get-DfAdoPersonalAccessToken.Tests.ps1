@@ -55,7 +55,7 @@ Describe "Get-DfAdoPersonalAccessToken" {
         BeforeAll {
             Mock Invoke-DfAdoRestMethod {
                 param($Uri, $Method, $Body)
-                $Result = @{
+                $Result = [PSCustomObject]@{
                     PatTokens = [PSCustomObject]@(
                         [PSCustomObject]@{
                             displayName = "pat1"
@@ -73,7 +73,7 @@ Describe "Get-DfAdoPersonalAccessToken" {
                         }
                     )
                 }
-                return [PSCustomObject]$Result
+                return $Result
             } -ModuleName DeploymentFramework -Verifiable
         }
 

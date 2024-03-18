@@ -5,7 +5,9 @@ function Test-DfAdoPersonalAccessToken {
         [string]$OrganizationName,
 
         [Parameter(Mandatory = $true)]
-        [string]$DisplayName
+        [string]$DisplayName,
+
+        [string]$KeyVaultName
     )
 
     try {
