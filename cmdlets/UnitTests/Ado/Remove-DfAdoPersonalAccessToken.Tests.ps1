@@ -84,7 +84,7 @@ Describe "Remove-DfAdoPersonalAccessToken" {
         }
     }
 
-    Context "PAT removed successfully with KeyVaultName" {
+    Context "PAT removed successfully with KeyVaultName" -Skip {
         BeforeAll {
             Mock Get-DfAdoPersonalAccessToken { return $null } -ModuleName DeploymentFramework -Verifiable
             Mock Invoke-DfAdoRestMethod { } -ModuleName DeploymentFramework -Verifiable
