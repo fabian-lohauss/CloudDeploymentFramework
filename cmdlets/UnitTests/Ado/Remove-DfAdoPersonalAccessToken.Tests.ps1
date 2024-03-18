@@ -62,16 +62,12 @@ Describe "Remove-DfAdoPersonalAccessToken" {
             Mock Get-DfAdoPersonalAccessToken { 
                 param($Uri, $Method, $Body)
                 $Result = [PSCustomObject]@{
-                    PatTokens = [PSCustomObject]@(
-                        [PSCustomObject]@{
-                            displayName     = "pat1"
-                            validFrom       = "2023-12-31T18:38:34.69Z"
-                            validTo         = "2024-01-01T18:38:34.69Z"
-                            scope           = "CodeRead"
-                            token           = "myPatToken1"
-                            authorizationId = "authorizationId"
-                        }
-                    )
+                    displayName     = "pat1"
+                    validFrom       = "2023-12-31T18:38:34.69Z"
+                    validTo         = "2024-01-01T18:38:34.69Z"
+                    scope           = "CodeRead"
+                    token           = "myPatToken1"
+                    authorizationId = "authorizationId"
                 }
                 return $Result
             } -ModuleName DeploymentFramework -Verifiable
@@ -115,24 +111,22 @@ Describe "Remove-DfAdoPersonalAccessToken" {
         BeforeAll {
             Mock Get-DfAdoPersonalAccessToken { 
                 param($Uri, $Method, $Body)
-                $Result = [PSCustomObject]@{
-                    PatTokens = [PSCustomObject]@(
-                        [PSCustomObject]@{
-                            displayName = $Body.DisplayName
-                            validFrom   = "2023-12-31T18:38:34.69Z"
-                            validTo     = "2024-01-01T18:38:34.69Z"
-                            scope       = "CodeRead"
-                            token       = "myPatToken1"
-                        },
-                        [PSCustomObject]@{
-                            displayName = $Body.DisplayName
-                            validFrom   = "2023-12-31T18:38:34.69Z"
-                            validTo     = "2024-01-01T18:38:34.69Z"
-                            scope       = "PackagingRead"
-                            token       = "myPatToken2"
-                        }
-                    )
-                }
+                $Result = [PSCustomObject]@(
+                    [PSCustomObject]@{
+                        displayName = $Body.DisplayName
+                        validFrom   = "2023-12-31T18:38:34.69Z"
+                        validTo     = "2024-01-01T18:38:34.69Z"
+                        scope       = "CodeRead"
+                        token       = "myPatToken1"
+                    },
+                    [PSCustomObject]@{
+                        displayName = $Body.DisplayName
+                        validFrom   = "2023-12-31T18:38:34.69Z"
+                        validTo     = "2024-01-01T18:38:34.69Z"
+                        scope       = "PackagingRead"
+                        token       = "myPatToken2"
+                    }
+                )
                 return $Result
             } -ModuleName DeploymentFramework -Verifiable
         }
