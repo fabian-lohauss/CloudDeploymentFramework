@@ -13,7 +13,7 @@ function Invoke-DfAdoRestMethod {
         [hashtable]$Body
     )
 
-    $BearerToken = New-DfBearerToken
+    $BearerToken = Get-DfBearerToken
     $header = @{
         Authorization  = $BearerToken
         'Content-Type' = "application/json"

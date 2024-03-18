@@ -1,4 +1,4 @@
-function New-DfBearerToken {
+function Get-DfBearerToken {
     try {
         $context = Get-AzAccessToken -ErrorAction Stop
     } catch {

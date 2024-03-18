@@ -2,7 +2,7 @@ BeforeAll {
     Import-Module $PSScriptRoot/../../src/DeploymentFramework.psd1 -Force
 }
 
-Describe "New-DfBearerToken" {
+Describe "Get-DfBearerToken" {
     BeforeAll {
         Mock Get-AzAccessToken { throw "should be mocked" } -ModuleName DeploymentFramework -Verifiable
     }
@@ -13,7 +13,7 @@ Describe "New-DfBearerToken" {
         }
     
         It 'Correctly processes non-terminating error from Get-AzAccessToken as exception message' {
-            { New-DfBearerToken } | Should -Throw "Failed to get bearer token: non-terminating error"
+            { Get-DfBearerToken } | Should -Throw "Failed to get bearer token: non-terminating error"
         }
     }
 
@@ -23,7 +23,7 @@ Describe "New-DfBearerToken" {
         }
 
         It "should throw" {
-            { New-DfBearerToken } | Should -Throw "Failed to get bearer token: other error"
+            { Get-DfBearerToken } | Should -Throw "Failed to get bearer token: other error"
         }
     }
 
@@ -33,7 +33,7 @@ Describe "New-DfBearerToken" {
         }
 
         It "should return the bearer token" {
-            New-DfBearerToken | Should -Be "Bearer eyJ0eX"
+            Get-DfBearerToken | Should -Be "Bearer eyJ0eX"
         }
     }
 }

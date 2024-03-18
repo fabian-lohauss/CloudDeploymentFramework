@@ -4,7 +4,7 @@ BeforeAll {
 
 Describe "Invoke-DfAdoRestMethod" {
     BeforeAll {
-        Mock New-DfBearerToken { return "" } -ModuleName DeploymentFramework -Verifiable
+        Mock Get-DfBearerToken { return "" } -ModuleName DeploymentFramework -Verifiable
     }
 
     Context "parameters" {
@@ -25,7 +25,7 @@ Describe "Invoke-DfAdoRestMethod" {
     
     Context "sign in popup" {
         BeforeAll {
-            Mock New-DfBearerToken { return "" } -ModuleName DeploymentFramework -Verifiable
+            Mock Get-DfBearerToken { return "" } -ModuleName DeploymentFramework -Verifiable
             Mock Invoke-RestMethod {
                 param($Uri, $Method, $Body, $Headers)
                 return @"
@@ -45,7 +45,7 @@ Describe "Invoke-DfAdoRestMethod" {
 
     Context "expired Azure token" {
         BeforeAll {
-            Mock New-DfBearerToken { return "" } -ModuleName DeploymentFramework -Verifiable
+            Mock Get-DfBearerToken { return "" } -ModuleName DeploymentFramework -Verifiable
             Mock Invoke-RestMethod {
                 param($Uri, $Method, $Body, $Headers)
                 throw "TF401444: Please sign-in at least once as 2cc4f755-24fa-4386-b120-80edcf8d499a\\user@something.onmicrosoft.com in a web browser to enable access to the service."
@@ -68,7 +68,7 @@ Describe "Invoke-DfAdoRestMethod" {
 
     Context "other exception" {
         BeforeAll {
-            Mock New-DfBearerToken { return "" } -ModuleName DeploymentFramework -Verifiable
+            Mock Get-DfBearerToken { return "" } -ModuleName DeploymentFramework -Verifiable
             Mock Invoke-RestMethod {
                 throw "an exception"
             } -ModuleName DeploymentFramework -Verifiable
