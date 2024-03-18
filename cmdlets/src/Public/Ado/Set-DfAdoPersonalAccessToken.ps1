@@ -11,6 +11,9 @@ function Set-DfAdoPersonalAccessToken {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [string]$OrganizationName,
 
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [string]$UserName,
+
         [Parameter(Mandatory)]
         [string]$DisplayName,
 
@@ -66,6 +69,9 @@ function Set-DfAdoPersonalAccessToken {
     }
 
     $PatTokenDetails = $Result.patToken
+    $PatTokenDetails.UserName = $UserName
+    $PatTokenDetails.OrganizationName = $OrganizationName
+    
     # $PatToken = $PatTokenDetails.token
     # $validFrom = [datetime]::Parse($PatTokenDetails.validFrom)
     # $validTo = [datetime]::Parse($PatTokenDetails.validTo)

@@ -19,7 +19,11 @@ Describe "Set-DfAdoPersonalAccessToken" {
         }
 
         It "should have mandatory paramater scope" {
-            Get-Command Set-DfAdoPersonalAccessToken | Should -HaveParameter "Scope" -Mandatory
+            Get-Command Set-DfAdoPersonalAccessToken | Should -HaveParameter "Scope" -Mandatory 
+        }
+
+        It "should have optional parameter UserName" {
+            Get-Command Set-DfAdoPersonalAccessToken | Should -HaveParameter "UserName" -Type "string"
         }
     }
 
@@ -65,10 +69,12 @@ Describe "Set-DfAdoPersonalAccessToken" {
         }
 
         It "should return the result with parameter -Passthru" {
-            $Pat = Set-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" -Passthru
+            $Pat = Set-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" -UserName "john doe" -Passthru
             $Pat.displayName | Should -Be "myNewPat"
             [datetime]($Pat.validTo) | Should -Be ([datetime]"2024-01-31T18:38:34.69Z")
             $Pat.scope | Should -Be "vso.packaging"
+            $Pat.UserName | Should -Be "john doe"
+            $Pat.OrganizationName | Should -Be "organizationName"
         }
 
         It "should not return anything without parameter -Passthru" {
