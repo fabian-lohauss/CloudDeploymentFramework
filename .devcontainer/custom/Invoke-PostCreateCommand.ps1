@@ -1,5 +1,9 @@
-Install-Module Pester -Scope CurrentUser -Force
-Install-Module Az.Accounts -Scope CurrentUser -Force
-Install-Module Az.Resources -Scope CurrentUser -Force
+Write-Host "###############################################"
+Write-Host "Installing PowerShell modules"
+"Pester", "Az.Accounts", "Az.Resources", "Az.Keyvault" | ForEach-Object { 
+    Install-PSResource $_ -Scope CurrentUser -TrustRepository -Verbose
+}
 
+Write-Host "###############################################"
+Write-Host "Installing npm packages"
 npm install -g @devcontainers/cli

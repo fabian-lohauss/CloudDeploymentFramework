@@ -58,7 +58,8 @@ function Set-DfAdoPersonalAccessToken {
         if ($ExistingToken) {
             $Method = "Put"
             $tokenBody.authorizationId = $ExistingToken.authorizationId
-        } else {
+        }
+        else {
             $Method = "Post"
         }
 
@@ -72,14 +73,16 @@ function Set-DfAdoPersonalAccessToken {
     $PatTokenDetails | Add-Member -MemberType NoteProperty -Name OrganizationName -Value $OrganizationName -Force
     $PatTokenDetails | Add-Member -MemberType NoteProperty -Name UserName -Value $UserName -Force   
 
-    # $PatToken = $PatTokenDetails.token
-    # $validFrom = [datetime]::Parse($PatTokenDetails.validFrom)
-    # $validTo = [datetime]::Parse($PatTokenDetails.validTo)
+    if (-not [string]::IsNullOrEmpty($KeyVaultName)) {
+        $PatToken = $PatTokenDetails.token
+        $validFrom = [datetime]::Parse($PatTokenDetails.validFrom)
+        $validTo = [datetime]::Parse($PatTokenDetails.validTo)
 
-    # $secretValue = ConvertTo-SecureString $PatToken -AsPlainText -Force
-    # Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $displayName -SecretValue $secretValue -NotBefore $validFrom -Expires $validTo
+        $secretValue = ConvertTo-SecureString $PatToken -AsPlainText -Force
+        Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $displayName -SecretValue $secretValue -NotBefore $validFrom -Expires $validTo
+    }
 
-    # check if PassThru is specified
+    # convert secret to a string for display
     if ($PSCmdlet.MyInvocation.BoundParameters['PassThru']) {
         return [PSCustomObject]$PatTokenDetails
     }

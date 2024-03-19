@@ -7,6 +7,7 @@ Describe "Set-DfAdoPersonalAccessToken" {
     BeforeAll {
         Mock Get-DfAdoPersonalAccessToken { throw "Get-DfAdoPersonalAccessToken should be mocked" } -ModuleName DeploymentFramework -Verifiable
         Mock Invoke-DfAdoRestMethod { } -ModuleName DeploymentFramework -Verifiable
+        Mock Set-AzKeyVaultSecret { } -ModuleName DeploymentFramework -Verifiable
     }
 
     Context "Parameterset" {
@@ -24,6 +25,10 @@ Describe "Set-DfAdoPersonalAccessToken" {
 
         It "should have optional parameter UserName" {
             Get-Command Set-DfAdoPersonalAccessToken | Should -HaveParameter "UserName" -Type "string"
+        }
+
+        It "should have optional parameter KeyVaultName" {
+            Get-Command Set-DfAdoPersonalAccessToken | Should -HaveParameter "KeyVaultName" -Type "string"
         }
     }
 
@@ -48,7 +53,7 @@ Describe "Set-DfAdoPersonalAccessToken" {
         }
     }
   
-    Context "new PAT created successfully" {
+    Context "new PAT without KeyVault" {
         BeforeAll {
             Mock Get-DfAdoPersonalAccessToken { return $null } -ModuleName DeploymentFramework -Verifiable
             Mock Get-Date { return [datetime]"2024-01-01T18:38:34.69Z" } -ModuleName DeploymentFramework -Verifiable
@@ -80,6 +85,42 @@ Describe "Set-DfAdoPersonalAccessToken" {
         It "should not return anything without parameter -Passthru" {
             $Pat = Set-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead"
             $Pat | Should -Be $null
+        }
+
+        It "should call Invoke-DfAdoRestMethod" {
+            Set-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead"
+            Assert-MockCalled Invoke-DfAdoRestMethod -Exactly 1 -ParameterFilter { 
+                $Api -eq "tokens/pats" -and $Method -eq "Post" -and $Body.displayName -eq "myNewPat" -and $Body.scope -eq "vso.packaging"
+            } -ModuleName DeploymentFramework
+        }
+    }
+
+    Context "new PAT with keyvault" {
+        BeforeAll {
+            Mock Get-DfAdoPersonalAccessToken { return $null } -ModuleName DeploymentFramework -Verifiable
+            Mock Get-Date { return [datetime]"2024-01-01T18:38:34.69Z" } -ModuleName DeploymentFramework -Verifiable
+            Mock Invoke-DfAdoRestMethod {
+                param($Uri, $Method, $Body)
+                $Result = [PSCustomObject]@{
+                    patToken      = [PSCustomObject]@{
+                        displayName = $Body.displayName
+                        validFrom   = "2023-12-31T18:38:34.69Z"
+                        validTo     = $Body.validTo
+                        scope       = $Body.scope
+                        token       = "myNewPatToken"
+                    }
+                    patTokenError = "none"
+                }
+                return $Result
+            } -ModuleName DeploymentFramework -Verifiable
+            Mock Set-AzKeyVaultSecret { } -ModuleName DeploymentFramework -Verifiable
+        }
+
+        It "should call Set-AzKeyVaultSecret" {
+            Set-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "myKeyVault"
+            Assert-MockCalled Set-AzKeyVaultSecret -Exactly 1 -ModuleName DeploymentFramework -ParameterFilter { 
+                $Name -eq "myNewPat" -and $VaultName -eq "myKeyVault" -and (ConvertFrom-SecureString $secretValue -AsPlainText) -eq "myNewPatToken" -and $NotBefore -eq "2023-12-31T18:38:34.69Z" -and $Expires -eq "2024-01-31T18:38:34.69Z" 
+            }
         }
     }
 
