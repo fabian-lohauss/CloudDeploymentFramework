@@ -15,7 +15,7 @@ function Set-DfAdoPersonalAccessToken {
         [string]$UserName,
 
         [Parameter(Mandatory)]
-        [string]$DisplayName,
+        [string]$PatDisplayName,
 
         [Parameter(Mandatory)]
         [AdoScope[]]$Scope,
@@ -42,17 +42,17 @@ function Set-DfAdoPersonalAccessToken {
 
     $validTo = (Get-Date).AddDays(30).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
     $tokenBody = @{
-        displayName = $displayName
+        displayName = $PatDisplayName
         scope       = $PatScope
         validTo     = $validTo
         allOrgs     = $false
     }
 
     try {
-        $ExistingToken = Get-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -DisplayName $DisplayName
+        $ExistingToken = Get-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -PatDisplayName $PatDisplayName
 
         if ($ExistingToken.Count -gt 1) {
-            throw [Exception]::new("There are multiple personal access tokens with the same display name '{0}'" -f $DisplayName)
+            throw [Exception]::new("There are multiple personal access tokens with the same display name '{0}'" -f $PatDisplayName)
         }
 
         if ($ExistingToken) {
@@ -66,7 +66,7 @@ function Set-DfAdoPersonalAccessToken {
         $Result = Invoke-DfAdoRestMethod -OrganizationName $OrganizationName -Api "tokens/pats" -Method $Method -Body $tokenBody 
     }
     catch {
-        throw [Exception]::new(("Failed to create or update personal access token '{0}': {1}" -f $DisplayName, $_.Exception.Message), $_.Exception)
+        throw [Exception]::new(("Failed to create or update personal access token '{0}': {1}" -f $PatDisplayName, $_.Exception.Message), $_.Exception)
     }
 
     $PatTokenDetails = $Result.patToken
@@ -79,7 +79,7 @@ function Set-DfAdoPersonalAccessToken {
         $validTo = [datetime]::Parse($PatTokenDetails.validTo)
 
         $secretValue = ConvertTo-SecureString $PatToken -AsPlainText -Force
-        Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $displayName -SecretValue $secretValue -NotBefore $validFrom -Expires $validTo
+        Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $PatDisplayName -SecretValue $secretValue -NotBefore $validFrom -Expires $validTo
     }
 
     # convert secret to a string for display

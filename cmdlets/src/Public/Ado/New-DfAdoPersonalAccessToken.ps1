@@ -12,7 +12,7 @@ function New-DfAdoPersonalAccessToken {
         [string]$OrganizationName,
 
         [Parameter(Mandatory)]
-        [string]$DisplayName,
+        [string]$PatDisplayName,
 
         [Parameter(Mandatory)]
         [AdoScope[]]$Scope,
@@ -25,20 +25,20 @@ function New-DfAdoPersonalAccessToken {
 
     )
 
-    if (Test-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -DisplayName $DisplayName -KeyVaultName $KeyVaultName) {
+    if (Test-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -PatDisplayName $PatDisplayName -KeyVaultName $KeyVaultName) {
         if ($Force) {
-            Remove-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -DisplayName $DisplayName -KeyVaultName $KeyVaultName
+            Remove-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -PatDisplayName $PatDisplayName -KeyVaultName $KeyVaultName
         }
         else {
-            throw ("Failed to create new personal access token '{0}': Personal access token already exists" -f $DisplayName)
+            throw ("Failed to create new personal access token '{0}': Personal access token already exists" -f $PatDisplayName)
         }
     }
 
     try {
-        $Result = Set-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -DisplayName $DisplayName -Scope $Scope -KeyVaultName $KeyVaultName -PassThru
+        $Result = Set-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -PatDisplayName $PatDisplayName -Scope $Scope -KeyVaultName $KeyVaultName -PassThru
     }
     catch {
-        throw [Exception]::new("Failed to create new personal access token '{0}'" -f $DisplayName, $_.Exception)
+        throw [Exception]::new("Failed to create new personal access token '{0}'" -f $PatDisplayName, $_.Exception)
     }
     
     if ($PSCmdlet.MyInvocation.BoundParameters['PassThru']) {

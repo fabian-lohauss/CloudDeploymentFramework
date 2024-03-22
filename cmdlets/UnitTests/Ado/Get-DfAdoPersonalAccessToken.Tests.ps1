@@ -12,8 +12,8 @@ Describe "Get-DfAdoPersonalAccessToken" {
             Get-Command Get-DfAdoPersonalAccessToken | Should -HaveParameter "OrganizationName" -Mandatory
         }
 
-        It "should have optional paramater DisplayName" {
-            Get-Command Get-DfAdoPersonalAccessToken | Should -HaveParameter "DisplayName" 
+        It "should have optional paramater PatDisplayName" {
+            Get-Command Get-DfAdoPersonalAccessToken | Should -HaveParameter "PatDisplayName" 
         }
     }
 
@@ -78,7 +78,7 @@ Describe "Get-DfAdoPersonalAccessToken" {
         }
 
         It "should return only the PAT with the specified name" {
-            $PatTokens = Get-DfAdoPersonalAccessToken -OrganizationName "organizationName" -DisplayName "pat2"
+            $PatTokens = Get-DfAdoPersonalAccessToken -OrganizationName "organizationName" -PatDisplayName "pat2"
             $PatTokens.Count | Should -Be 1
             $PatTokens[0].displayName | Should -Be "pat2"
         }
@@ -148,7 +148,7 @@ Describe "Get-DfAdoPersonalAccessToken" {
         }
 
         It "should return an empty array" {
-            $PatTokens = Get-DfAdoPersonalAccessToken -OrganizationName "organizationName" -DisplayName "pat3"
+            $PatTokens = Get-DfAdoPersonalAccessToken -OrganizationName "organizationName" -PatDisplayName "pat3"
             $PatTokens.Count | Should -Be 0
         }
     }

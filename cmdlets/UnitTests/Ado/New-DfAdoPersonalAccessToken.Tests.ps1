@@ -15,7 +15,7 @@ Describe "New-DfAdoPersonalAccessToken" {
         }
 
         It "should have mandatory paramater DisplayName " {
-            Get-Command New-DfAdoPersonalAccessToken | Should -HaveParameter "DisplayName" -Mandatory
+            Get-Command New-DfAdoPersonalAccessToken | Should -HaveParameter "PatDisplayName" -Mandatory
         }
 
         It "should have mandatory paramater scope" {
@@ -42,12 +42,12 @@ Describe "New-DfAdoPersonalAccessToken" {
         }
 
         It "should throw" {
-            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -Scope CodeRead } | Should -Throw "Failed to create new personal access token 'displayName'"
+            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "displayName" -Scope CodeRead } | Should -Throw "Failed to create new personal access token 'displayName'"
         }
 
         It "should have the Set-DfAdoPersonalAccessToken as inner exception" {
             try {
-                New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -Scope PackagingRead
+                New-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "displayName" -Scope PackagingRead
                 throw "expected exception not thrown"
             }
             catch {
@@ -61,10 +61,10 @@ Describe "New-DfAdoPersonalAccessToken" {
             Mock Test-DfAdoPersonalAccessToken { return $false } -ModuleName DeploymentFramework -Verifiable
             Mock Get-Date { return [datetime]"2024-01-01T18:38:34.69Z" } -ModuleName DeploymentFramework -Verifiable
             Mock Set-DfAdoPersonalAccessToken {
-                param($DisplayName, $Scope)
+                param($PatDisplayName, $Scope)
                 $Result = [PSCustomObject]@{
                     patToken      = [PSCustomObject]@{
-                        displayName = $displayName
+                        displayName = $PatDisplayName
                         validFrom   = [datetime]"2023-12-31T18:38:34.69Z"
                         validTo     = [datetime]"2024-01-31T18:38:34.69Z"
                         scope       = "vso.packaging"
@@ -77,14 +77,14 @@ Describe "New-DfAdoPersonalAccessToken" {
         }
 
         It "should return the result with parameter -Passthru" {
-            $Pat = New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" -Passthru
+            $Pat = New-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -Passthru
             $Pat.displayName | Should -Be "myNewPat"
             [datetime]($Pat.validTo) | Should -Be ([datetime]"2024-01-31T18:38:34.69Z")
             $Pat.scope | Should -Be "vso.packaging"
         }
 
         It "should not return anything without parameter -Passthru" {
-            $Pat = New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead"
+            $Pat = New-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead"
             $Pat | Should -Be $null
         }
     }
@@ -96,7 +96,7 @@ Describe "New-DfAdoPersonalAccessToken" {
         }
 
         It "should throw" {
-            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" } | Should -Throw "Failed to create new personal access token 'myNewPat': Personal access token already exists"
+            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" } | Should -Throw "Failed to create new personal access token 'myNewPat': Personal access token already exists"
         }
     }
 
@@ -108,17 +108,17 @@ Describe "New-DfAdoPersonalAccessToken" {
         }
 
         It "should not throw" {
-            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force } | Should -Not -Throw
+            { New-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force } | Should -Not -Throw
         }
 
         It "should call Remove-DfAdoPersonalAccessToken" {
-            New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force
-            Assert-MockCalled Remove-DfAdoPersonalAccessToken -Scope It -ParameterFilter { $displayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and $KeyVaultName -eq "TheKeyvault"  } -ModuleName DeploymentFramework
+            New-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force
+            Assert-MockCalled Remove-DfAdoPersonalAccessToken -Scope It -ParameterFilter { $PatDisplayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and $KeyVaultName -eq "TheKeyvault"  } -ModuleName DeploymentFramework
         }
 
         It "should call Set-DfAdoPersonalAccessToken" {
-            New-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force
-            Assert-MockCalled Set-DfAdoPersonalAccessToken -Scope It -ParameterFilter { $displayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and "PackagingRead" -eq $scope -and $KeyVaultName -eq "TheKeyvault" } -ModuleName DeploymentFramework
+            New-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force
+            Assert-MockCalled Set-DfAdoPersonalAccessToken -Scope It -ParameterFilter { $PatDisplayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and "PackagingRead" -eq $scope -and $KeyVaultName -eq "TheKeyvault" } -ModuleName DeploymentFramework
         }
     }
 }

@@ -5,18 +5,18 @@ function Test-DfAdoPersonalAccessToken {
         [string]$OrganizationName,
 
         [Parameter(Mandatory = $true)]
-        [string]$DisplayName,
+        [string]$PatDisplayName,
 
         [string]$KeyVaultName
     )
 
     try {
-        $PatTokens = Get-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -DisplayName $DisplayName
+        $PatTokens = Get-DfAdoPersonalAccessToken -OrganizationName $OrganizationName -PatDisplayName $PatDisplayName
         if ($PatTokens.Count -eq 0) {
             return $false
         }
         if ($PatTokens.Count -gt 1) {
-            throw [Exception]::new("The personal access token name '$DisplayName' is not unique.")
+            throw [Exception]::new("The personal access token name '$PatDisplayName' is not unique.")
         }
         $PatToken = $PatTokens[0]
         if (($null -ne $PatToken.validTo) -and ([DateTime]::Parse($PatToken.validTo) -lt [DateTime]::UtcNow)) {

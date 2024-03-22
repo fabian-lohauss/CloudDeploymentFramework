@@ -14,8 +14,8 @@ Describe "Remove-DfAdoPersonalAccessToken" {
             Get-Command Remove-DfAdoPersonalAccessToken | Should -HaveParameter "OrganizationName" -Mandatory
         }
 
-        It "should have mandatory paramater DisplayName " {
-            Get-Command Remove-DfAdoPersonalAccessToken | Should -HaveParameter "DisplayName" -Mandatory
+        It "should have mandatory paramater PatDisplayName " {
+            Get-Command Remove-DfAdoPersonalAccessToken | Should -HaveParameter "PatDisplayName" -Mandatory
         }
 
         It "should have optional paramater KeyVaultName" {
@@ -43,12 +43,12 @@ Describe "Remove-DfAdoPersonalAccessToken" {
         }
 
         It "should throw" {
-            { Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" } | Should -Throw "Failed to remove personal access token 'displayName': Invoke-DfAdoRestMethod: some exception."
+            { Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "displayName" } | Should -Throw "Failed to remove personal access token 'displayName': Invoke-DfAdoRestMethod: some exception."
         }
 
         It "should have the Invoke-DfAdoRestMethod as inner exception" {
             try {
-                Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName"
+                Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "displayName"
                 throw "expected exception not thrown"
             }
             catch {
@@ -75,11 +75,11 @@ Describe "Remove-DfAdoPersonalAccessToken" {
         }
 
         It "should not throw" {
-            { Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" } | Should -Not -Throw
+            { Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "displayName" } | Should -Not -Throw
         }
 
         It "should call Invoke-DfAdoRestMethod" {
-            Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName"
+            Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "displayName"
             Assert-MockCalled Invoke-DfAdoRestMethod -Exactly 1 -Scope It -ParameterFilter { $AuthorizationId -eq "authorizationId" }  -ModuleName DeploymentFramework
         }
     }
@@ -91,7 +91,7 @@ Describe "Remove-DfAdoPersonalAccessToken" {
         }
 
         It "should delete the PAT from the KeyVault" {
-            Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" -KeyVaultName "keyVaultName"
+            Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "displayName" -KeyVaultName "keyVaultName"
             Assert-MockCalled Remove-DfKeyVaultSecret -Exactly 1 -Scope It -ModuleName DeploymentFramework
         }
     }
@@ -103,7 +103,7 @@ Describe "Remove-DfAdoPersonalAccessToken" {
         }
 
         It "return null" {
-            Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" | Should -Be $null
+            Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "displayName" | Should -Be $null
         }
     }
 
@@ -132,7 +132,7 @@ Describe "Remove-DfAdoPersonalAccessToken" {
         }
 
         It "should throw" {
-            { Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -displayName "displayName" } | Should -Throw "Failed to remove personal access token 'displayName': There are multiple personal access tokens with the same display name 'displayName'"
+            { Remove-DfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "displayName" } | Should -Throw "Failed to remove personal access token 'displayName': There are multiple personal access tokens with the same display name 'displayName'"
         }
     }
 }

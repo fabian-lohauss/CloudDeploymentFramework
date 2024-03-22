@@ -4,7 +4,7 @@ function Get-DfAdoPersonalAccessToken {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [string]$OrganizationName,
 
-        [string]$DisplayName
+        [string]$PatDisplayName
     )
 
     try {
@@ -14,8 +14,8 @@ function Get-DfAdoPersonalAccessToken {
         throw [Exception]::new(("Failed to get personal access token: {0}" -f $_.Exception.Message), $_.Exception)
     }
     $PatTokens = $Result.PatTokens 
-    if (-not [string]::IsNullOrEmpty($DisplayName)) {
-        $PatTokens = $PatTokens | Where-Object { $_.displayName -eq $DisplayName }
+    if (-not [string]::IsNullOrEmpty($PatDisplayName)) {
+        $PatTokens = $PatTokens | Where-Object { $_.displayName -eq $PatDisplayName }
     }
 
     return $PatTokens
