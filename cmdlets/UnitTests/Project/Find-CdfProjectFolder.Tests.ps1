@@ -1,5 +1,5 @@
 BeforeAll {
-    Import-Module $PSScriptRoot/../../src/CloudDeploymentFramework.psd1 -force
+    Import-Module $PSScriptRoot/../../src/CloudDeploymentFramework/CloudDeploymentFramework.psd1 -force
 }
 
 Describe "Find-CdfProjectFolder" {

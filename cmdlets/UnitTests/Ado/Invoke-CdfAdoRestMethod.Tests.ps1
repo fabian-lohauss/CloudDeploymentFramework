@@ -1,5 +1,5 @@
 BeforeAll {
-    Import-Module $PSScriptRoot/../../src/CloudDeploymentFramework.psd1 -Force
+    Import-Module $PSScriptRoot/../../src/CloudDeploymentFramework/CloudDeploymentFramework.psd1 -Force
 }
 
 Describe "Invoke-CdfAdoRestMethod" {

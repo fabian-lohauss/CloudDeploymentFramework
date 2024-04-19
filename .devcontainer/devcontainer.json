@@ -28,7 +28,8 @@
 				"ms-azuretools.vscode-bicep",
 				"ms-azuretools.vscode-azureresourcegroups",
 				"msazurermtools.azurerm-vscode-tools",
-				"ms-vscode.azurecli"
+				"ms-vscode.azurecli",
+				"github.vscode-github-actions"
 			]
 		}
 	},
