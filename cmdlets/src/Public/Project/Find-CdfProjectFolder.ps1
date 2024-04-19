@@ -4,14 +4,14 @@ Function Find-CdfProjectFolder {
     param ( )
 
     $CurrentFolder = $pwd
-    $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
+    $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".cdf" | Test-Path 
 
     while (-not $ProjectFolderFound) {
         $CurrentFolder = Split-Path $CurrentFolder -Parent
         if ([string]::IsNullOrEmpty($CurrentFolder)) {
             throw ("Failed to find CloudDeploymentFramework project folder in '{0}'" -f $pwd)
         }
-        $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".df" | Test-Path 
+        $ProjectFolderFound = Join-Path $CurrentFolder -ChildPath ".cdf" | Test-Path 
     }
     return Get-Item $CurrentFolder
 }

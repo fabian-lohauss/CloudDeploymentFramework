@@ -5,7 +5,7 @@ BeforeAll {
 Describe "Add-CdfEnvironment" {
     BeforeAll {
         Mock Get-CdfProject { return @{ Path = "TestDrive:/" } } -ModuleName CloudDeploymentFramework
-        New-Item -Path "TestDrive:/.df/Configuration.json" -Value "{}" -Force
+        New-Item -Path "TestDrive:/.cdf/Configuration.json" -Value "{}" -Force
     }
 
     Context "parameterset" {
@@ -25,7 +25,7 @@ Describe "Add-CdfEnvironment" {
     Context "happy path" {
         It "should add the environment to the configuration file" {
             Add-CdfEnvironment -Name "dev" -Subscription "123-456"
-            $Config = (Get-Content "TestDrive:/.df/Configuration.json" | ConvertFrom-Json)
+            $Config = (Get-Content "TestDrive:/.cdf/Configuration.json" | ConvertFrom-Json)
             $Config.Environment.dev.Subscription | Should -Be "123-456"
         }
     }
@@ -33,7 +33,7 @@ Describe "Add-CdfEnvironment" {
     Context "from name by pipeline" {
         It "should add the environment to the configuration file" {
             [PSCustomObject]@{ Id = "123-456-789" } | Add-CdfEnvironment -Name "dev"
-            $Config = (Get-Content "TestDrive:/.df/Configuration.json" | ConvertFrom-Json)
+            $Config = (Get-Content "TestDrive:/.cdf/Configuration.json" | ConvertFrom-Json)
             $Config.Environment.dev.Subscription | Should -Be "123-456-789"
         }
     }
@@ -45,7 +45,7 @@ Describe "Add-CdfEnvironment" {
 
         It "should add the environment to the configuration file" {
             Add-CdfEnvironment -Name "dev" -CurrentAzureContext
-            $Config = (Get-Content "TestDrive:/.df/Configuration.json" | ConvertFrom-Json)
+            $Config = (Get-Content "TestDrive:/.cdf/Configuration.json" | ConvertFrom-Json)
             $Config.Environment.dev.Subscription | Should -Be "123-456"
         }
     }

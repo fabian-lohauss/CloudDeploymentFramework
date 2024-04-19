@@ -20,12 +20,12 @@ Describe "Initialize-CdfProject" {
             Pop-Location
         }
 
-        It "should create the .df folder" {
-            (Test-Path "TestDrive:/.df" -PathType Container) | Should -Be $true
+        It "should create the .cdf folder" {
+            (Test-Path "TestDrive:/.cdf" -PathType Container) | Should -Be $true
         }
 
         It "should create the configuration file" {
-            (Get-ChildItem "TestDrive:/.df").Name | Should -Contain "Configuration.json"
+            (Get-ChildItem "TestDrive:/.cdf").Name | Should -Contain "Configuration.json"
         }
     }
 
@@ -33,7 +33,7 @@ Describe "Initialize-CdfProject" {
         BeforeAll {
             Push-Location "TestDrive:/"
             Initialize-CdfProject -Name "Project"
-            $sut = Get-Content "TestDrive:/.df/Configuration.json" | ConvertFrom-Json
+            $sut = Get-Content "TestDrive:/.cdf/Configuration.json" | ConvertFrom-Json
         }
 
         AfterAll {
@@ -72,7 +72,7 @@ Describe "Initialize-CdfProject" {
 
     Context "current folder already initialized" {
         BeforeAll {
-            New-Item -Path "TestDrive:/.df" -Name "Configuration.json" -ItemType File -Value "@{ }" -Force | Out-Null
+            New-Item -Path "TestDrive:/.cdf" -Name "Configuration.json" -ItemType File -Value "@{ }" -Force | Out-Null
             Push-Location "TestDrive:/"
             $sut = Initialize-CdfProject -Name "Project"
         }
@@ -81,8 +81,8 @@ Describe "Initialize-CdfProject" {
             Pop-Location
         }
 
-        It "should keep the .df folder" {
-            (Test-Path "TestDrive:/.df" -PathType Container) | Should -Be $true
+        It "should keep the .cdf folder" {
+            (Test-Path "TestDrive:/.cdf" -PathType Container) | Should -Be $true
         }
     }
 }

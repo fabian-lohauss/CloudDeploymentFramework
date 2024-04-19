@@ -5,7 +5,14 @@ BeforeAll {
 Describe "Get-CdfAdoPipExtraIndexUrl" {
     Context "token in keyvault" {
         BeforeAll {
-            Mock Get-AzKeyVaultSecret -ParameterFilter { $Name -eq "PatDisplayName" } { return [PSCustomObject]@{ SecretValue = ("my-token" | ConvertTo-SecureString -AsPlainText -Force) } } -ModuleName CloudDeploymentFramework
+            Mock Get-AzKeyVaultSecret -ParameterFilter { $Name -eq "PatDisplayName" } { 
+                Function Get-MockSecret {
+                    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSecureStrings', '', Justification='Used for mocking in tests only')]
+                    param()
+                    return [PSCustomObject]@{ SecretValue = ("my-token" | ConvertTo-SecureString -AsPlainText -Force) }
+                }
+                return Get-MockSecret
+            } -ModuleName CloudDeploymentFramework
         }
 
         It "Should return the correct URL" {

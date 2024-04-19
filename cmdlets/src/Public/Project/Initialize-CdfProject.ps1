@@ -6,7 +6,7 @@ Function Initialize-CdfProject {
         [string]$Name
     )
 
-    $ServiceFolder = Join-Path $PWD -ChildPath ".df"
+    $ServiceFolder = Join-Path $PWD -ChildPath ".cdf"
     if (-not (Test-Path $ServiceFolder)) {
         $Folder = New-Item -Path $ServiceFolder -ItemType Directory 
         [System.IO.File]::SetAttributes($Folder.FullName, [System.IO.FileAttributes]::Directory -band [System.IO.FileAttributes]::Hidden)

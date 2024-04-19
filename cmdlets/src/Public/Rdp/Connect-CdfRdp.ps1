@@ -90,19 +90,19 @@ Function Connect-CdfRdp {
     }
 
     Write-CdfLog ("Checking if VM '{0}' has the required tags" -f $VM.Name)
-    if ($null -eq $VM.Tags.DfBastionName) {
+    if ($null -eq $VM.Tags.CdfBastionName) {
         throw ("Missing tag DfBastionName on VM '{0}'" -f $VM.Name)
     }
-    if ($null -eq $VM.Tags.DfBastionResourceGroup) {
+    if ($null -eq $VM.Tags.CdfBastionResourceGroup) {
         throw ("Missing tag DfBastionResourceGroup on VM '{0}'" -f $VM.Name)
     }
 
-    Write-CdfLog ("Checking if bastion '{0}' exists in resource group '{1}'" -f $VM.Tags.DfBastionName, $VM.Tags.DfBastionResourceGroup)
-    $Bastion = Get-AzBastion -Name $VM.Tags.DfBastionName -ResourceGroupName $VM.Tags.DfBastionResourceGroup
+    Write-CdfLog ("Checking if bastion '{0}' exists in resource group '{1}'" -f $VM.Tags.CdfBastionName, $VM.Tags.CdfBastionResourceGroup)
+    $Bastion = Get-AzBastion -Name $VM.Tags.CdfBastionName -ResourceGroupName $VM.Tags.CdfBastionResourceGroup
     if ($null -eq $Bastion) {
         throw "Bastion not found"
     }
 
-    Write-CdfLog ("Connecting to VM '{0}' via bastion '{1}' in resource group '{2}'" -f $VM.Name, $VM.Tags.DfBastionName, $VM.Tags.DfBastionResourceGroup)
-    az network bastion rdp --name $VM.Tags.DfBastionName --resource-group $VM.Tags.DfBastionResourceGroup --target-resource-id $VM.Id
+    Write-CdfLog ("Connecting to VM '{0}' via bastion '{1}' in resource group '{2}'" -f $VM.Name, $VM.Tags.CdfBastionName, $VM.Tags.CdfBastionResourceGroup)
+    az network bastion rdp --name $VM.Tags.CdfBastionName --resource-group $VM.Tags.CdfBastionResourceGroup --target-resource-id $VM.Id
 }

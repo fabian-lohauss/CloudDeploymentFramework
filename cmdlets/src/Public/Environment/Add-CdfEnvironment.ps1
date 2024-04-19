@@ -13,7 +13,7 @@ function Add-CdfEnvironment {
         [switch]$CurrentAzureContext
     )
     
-    $ConfigurationFile = Join-Path (Get-CdfProject).Path -ChildPath ".df/Configuration.json"
+    $ConfigurationFile = Join-Path (Get-CdfProject).Path -ChildPath ".cdf/Configuration.json"
     $Config = Get-Content $ConfigurationFile | ConvertFrom-Json -AsHashtable
     switch ($PSCmdlet.ParameterSetName) {
         "UseSubscription" {
