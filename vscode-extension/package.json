@@ -1,7 +1,7 @@
 {
-  "name": "deploymentframework",
-  "displayName": "DeploymentFramework",
-  "description": "DeploymentFramework extension",
+  "name": "CloudDeploymentFramework",
+  "displayName": "CloudDeploymentFramework",
+  "description": "CloudDeploymentFramework extension",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.77.0"
@@ -18,7 +18,7 @@
       "activitybar": [
         {
           "id": "sample-container",
-          "title": "DeploymentFramework",
+          "title": "CloudDeploymentFramework",
           "icon": "./resources/deployment-framework-icon.svg"
         }
       ]

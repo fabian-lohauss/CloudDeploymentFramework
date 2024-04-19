@@ -1,23 +1,23 @@
 BeforeAll {
-    Import-Module $PSScriptRoot/../../src/DeploymentFramework.psd1 -Force
+    Import-Module $PSScriptRoot/../../src/CloudDeploymentFramework.psd1 -Force
 }
 
 
-Describe "New-DfComponent" {
+Describe "New-CdfComponent" {
     Context "ParameterSet" {
         It "should have a mandatory name parameter" {
-            Get-Command -Name New-DfComponent | Should -HaveParameter Name -Mandatory
+            Get-Command -Name New-CdfComponent | Should -HaveParameter Name -Mandatory
         }            
 
         It "should have a mandatory type parameter" {
-            Get-Command -Name New-DfComponent | Should -HaveParameter Type -Mandatory 
+            Get-Command -Name New-CdfComponent | Should -HaveParameter Type -Mandatory 
         }            
     }
 
     Context "happy path" {
         BeforeAll {
-            Mock Get-DfProject { return New-Object -TypeName PSCustomObject -Property @{ ComponentsPath = "TestDrive:/Components" } } -ModuleName DeploymentFramework -Verifiable
-            $sut = New-DfComponent "Something" -Type Bicep
+            Mock Get-CdfProject { return New-Object -TypeName PSCustomObject -Property @{ ComponentsPath = "TestDrive:/Components" } } -ModuleName CloudDeploymentFramework -Verifiable
+            $sut = New-CdfComponent "Something" -Type Bicep
         }
 
         It "should return only the component" {

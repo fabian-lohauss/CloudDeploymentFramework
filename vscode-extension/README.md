@@ -1,6 +1,6 @@
-# deploymentframework README
+# CloudDeploymentFramework README
 
-This is the README for your extension "deploymentframework". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "CloudDeploymentFramework". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 
