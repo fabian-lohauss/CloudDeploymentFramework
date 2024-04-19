@@ -7,7 +7,7 @@ Describe "Get-CdfAdoPipExtraIndexUrl" {
         BeforeAll {
             Mock Get-AzKeyVaultSecret -ParameterFilter { $Name -eq "PatDisplayName" } { 
                 Function Get-MockSecret {
-                    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSecureStrings', '', Justification='Used for mocking in tests only')]
+                    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification='Used for mocking in tests only')]
                     param()
                     return [PSCustomObject]@{ SecretValue = ("my-token" | ConvertTo-SecureString -AsPlainText -Force) }
                 }
