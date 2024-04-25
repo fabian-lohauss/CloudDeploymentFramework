@@ -17,13 +17,23 @@ load balancer backends are deployed to the stamp resource groups
 
 [Cmdlets](cmdlets/readme.md)
 
+# Setup DevContainer prerequisites
+
+[Install and configure DevContainer prerequisites](docs/readme.DevContainer.md)
+
+# Setup local environment
+
 ```pwsh
-git config --global user.name $env:UserName
-git config --global user.email $env:UserEmail
+Install-Module CloudDeploymentFramework
+```
+
+```pwsh
+git config --global user.name $env:CdfUserName
+git config --global user.email $env:CdfUserEmail
 
 az extension add --upgrade -n bastion
 az config set core.allow_broker=true
 az account clear
 az login
-Get-AzVm -Name DC01 | ForEach-Object {  az network bastion rdp --resource-group $_.Tags.DfBastionResourceGroup --name $_.Tags.DfBastionName --target-resource-id $_.id }
+
 ```
