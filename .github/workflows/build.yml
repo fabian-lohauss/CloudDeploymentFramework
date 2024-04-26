@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  PSScriptAnalyzer:
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
@@ -73,6 +73,17 @@ jobs:
           files: |
             TestResults-UnitTest.xml
 
+  publish-to-gallery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and publish
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        shell: pwsh
+        run: |
+          . ./cmdlets/nuget/Publish-CdfModule.ps1 -NuGetApiKey $env:NUGET_API_KEY
+          
 
           
 
