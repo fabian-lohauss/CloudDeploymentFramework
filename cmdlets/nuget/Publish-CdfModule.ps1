@@ -6,10 +6,12 @@ param(
 $NugetFolder = $PSScriptRoot
 $SourceFolder = Join-Path $NugetFolder -ChildPath ../src/CloudDeploymentFramework
 
-$PublishedModule = Find-PSResource CloudDeploymentFramework
+$PublishedModule = Find-PSResource CloudDeploymentFramework -Prerelease -Repository PSGallery
 $CurrentVersion = $PublishedModule.Version
+Write-Host "Current version: $CurrentVersion"
 
 $NewVersion = [Version]::new($CurrentVersion.Major, $CurrentVersion.Minor, $CurrentVersion.Build + 1)
+Write-Host "New version: $NewVersion"
 
 $Psd1File = Join-Path $SourceFolder -ChildPath CloudDeploymentFramework.psd1
 $Psd1Content = Get-Content $Psd1File
@@ -28,8 +30,10 @@ if (Get-PSResourceRepository -Name $LocalRepositoryName -ErrorAction SilentlyCon
 else {
     Register-PSResourceRepository -Name $LocalRepositoryName -Uri $LocalRepositoryPath -Trusted
 }
+Write-Host "Publishing module to $LocalRepositoryName"
 Publish-PSResource -Path $SourceFolder -ApiKey "abc" -Repository $LocalRepositoryName -Verbose
 
+Write-Host "Publishing module to PSGallery"
 Publish-PSResource -Path $SourceFolder -ApiKey $NuGetApiKey -Repository "PSGallery" -Verbose
 
 
