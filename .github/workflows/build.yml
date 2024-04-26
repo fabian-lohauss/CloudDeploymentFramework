@@ -54,7 +54,9 @@ jobs:
 
       - name: 'Invoke-Pester'
         shell: pwsh
-        run: Invoke-Pester ./cmdlets/UnitTests -OutputFile TestResults-UnitTest.xml -OutputFormat JUnitXml
+        run: |
+          .devcontainer/custom/Install-PowerShellPrerequisites.ps1
+          Invoke-Pester ./cmdlets/UnitTests -OutputFile TestResults-UnitTest.xml -OutputFormat JUnitXml
 
       - name: 'Upload unit test results'
         uses: actions/upload-artifact@v4
