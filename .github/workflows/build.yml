@@ -75,6 +75,7 @@ jobs:
 
   publish-to-gallery:
     runs-on: ubuntu-latest
+    needs: [test, PSScriptAnalyzer]
     steps:
       - uses: actions/checkout@v4
       - name: Build and publish

@@ -28,8 +28,8 @@ if (Get-PSResourceRepository -Name $LocalRepositoryName -ErrorAction SilentlyCon
 else {
     Register-PSResourceRepository -Name $LocalRepositoryName -Uri $LocalRepositoryPath -Trusted
 }
-Publish-PSResource -Path $ModuleFolder -ApiKey "abc" -Repository $LocalRepositoryName -Verbose
+Publish-PSResource -Path $SourceFolder -ApiKey "abc" -Repository $LocalRepositoryName -Verbose
 
-Publish-PSResource -Path $ModuleFolder -ApiKey $NuGetApiKey -Repository "PSGallery" -Verbose
+Publish-PSResource -Path $SourceFolder -ApiKey $NuGetApiKey -Repository "PSGallery" -Verbose
 
 
