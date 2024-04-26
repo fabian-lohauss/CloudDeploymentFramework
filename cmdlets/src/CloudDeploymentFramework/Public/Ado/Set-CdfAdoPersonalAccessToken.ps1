@@ -7,6 +7,7 @@ enum AdoScope {
 
 function Set-CdfAdoPersonalAccessToken {
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText')]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [string]$OrganizationName,
