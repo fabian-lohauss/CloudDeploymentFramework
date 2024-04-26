@@ -45,3 +45,21 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
+  
+  test:
+    name: 'Unit Tests'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 'Invoke-Pester'
+        run: Invoke-Pester ./cmdlets/UnitTests -OutputFile TestResults-UnitTest.xml -OutputFormat JUnitXml
+
+      - name: 'Upload unit test results'
+        uses: actions/upload-artifact@v4
+        with:
+          path: TestResults-UnitTest.xml
+
+
+          
+
