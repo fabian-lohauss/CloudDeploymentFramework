@@ -20,7 +20,7 @@ $NewVersionLine = ("    ModuleVersion = '{0}'" -f $NewVersion)
 $Psd1Content -replace $CurrentVersionLine, $NewVersionLine | Out-File $Psd1File
 
 $LocalRepositoryName = "LocalRepository"
-$LocalRepositoryPath = Join-Path $NugetFolder -ChildPath "Repository" -AdditionalChildPath $LocalRepositoryName -Resolve
+$LocalRepositoryPath = Join-Path $NugetFolder -ChildPath "Repository" -AdditionalChildPath $LocalRepositoryName
 New-Item -Path $LocalRepositoryPath -ItemType Directory -Force | Out-Null
 if (Get-PSResourceRepository -Name $LocalRepositoryName -ErrorAction SilentlyContinue) {
     Set-PSResourceRepository -Name $LocalRepositoryName -Uri $LocalRepositoryPath -Trusted
