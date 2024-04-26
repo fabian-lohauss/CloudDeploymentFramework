@@ -3,7 +3,7 @@ param(
     [string]$NuGetApiKey
 )
 
-$NugetFolder = Join-Path $PSScriptRoot
+$NugetFolder = $PSScriptRoot
 $SourceFolder = Join-Path $PSScriptRoot -ChildPath ../src/CloudDeploymentFramework
 
 $PublishedModule = Find-PSResource CloudDeploymentFramework
