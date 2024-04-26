@@ -4,7 +4,7 @@ param(
 )
 
 $NugetFolder = $PSScriptRoot
-$SourceFolder = Join-Path $PSScriptRoot -ChildPath ../src/CloudDeploymentFramework
+$SourceFolder = Join-Path $NugetFolder -ChildPath ../src/CloudDeploymentFramework
 
 $PublishedModule = Find-PSResource CloudDeploymentFramework
 $CurrentVersion = $PublishedModule.Version
