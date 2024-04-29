@@ -17,7 +17,7 @@ Write-Host "Latest prerelease version: $LatestPrereleaseVersion"
 $NewPrereleaseVersion = [Version]::new($LatestPrereleaseVersion.Major, $LatestPrereleaseVersion.Minor, $LatestPrereleaseVersion.Build + 1)
 Write-Host "New prerelease version: $NewPrereleaseVersion"
 
-("New prerelease version is '{0}'" -f $NewPrereleaseVersion)  | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+("New prerelease version is '{0}'" -f $NewPrereleaseVersion)  | Out-File -FilePath $Env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
 
 
 $Psd1File = Join-Path $SourceFolder -ChildPath CloudDeploymentFramework.psd1
