@@ -24,14 +24,16 @@ function Get-CdfAdoPersonalAccessToken {
     foreach ($PatToken in $PatTokens) {
         if (-not [string]::IsNullOrEmpty($KeyvaultName)) {
             try {
-                $KeyvaultSecretVersion = (Get-AzKeyVaultSecret -VaultName $KeyvaultName -Name $PatToken.DisplayName -ErrorAction Stop).Version
+                $KeyVault = Get-AzKeyVault -VaultName $KeyvaultName 
+                if (-not $KeyVault) {
+                    throw [Exception]::new(("Key vault '{0}' not found." -f $KeyvaultName))
+                }
+                $KeyvaultSecretVersion = ($KeyVault | Get-AzKeyVaultSecret -Name $PatToken.DisplayName -ErrorAction Stop).Version
             }
             catch [System.ArgumentException] {
                 $KeyvaultSecretVersion = [string]$null
             }
-            
             catch {
-                Write-Host $_.Exception | fl *
                 throw [Exception]::new(("Failed to look up keyvault secret of PAT '{0}' from keyvault '{1}': {2}" -f $PatToken.DisplayName, $KeyvaultName, $_.Exception.Message), $_.Exception)
             }
         }

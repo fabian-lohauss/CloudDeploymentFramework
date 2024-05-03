@@ -225,6 +225,7 @@ Describe "Get-CdfAdoPersonalAccessToken" {
                     Version = "$Name-version"
                 }
             } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Get-AzKeyVault { return [PSCustomObject]@{ ResourceId = "theKeyvaultResourceId" } } -ModuleName CloudDeploymentFramework -Verifiable
         }
 
         It "should return PATs with KeyvaultSecretVersion" {
@@ -270,12 +271,46 @@ Describe "Get-CdfAdoPersonalAccessToken" {
                 }
                 return $Result
             } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Get-AzKeyVault { return [PSCustomObject]@{ ResourceId = "theKeyvaultResourceId" } } -ModuleName CloudDeploymentFramework -Verifiable
         }
 
         It "should ignore [System.ArgumentException]: Invalid ObjectIdentifier" {
             Mock Get-AzKeyVaultSecret { throw [System.ArgumentException]"Invalid ObjectIdentifier" } -ModuleName CloudDeploymentFramework -Verifiable
             $PatTokens = Get-CdfAdoPersonalAccessToken -OrganizationName "organizationName" -KeyvaultName "keyvaultName"
             $PatTokens.Count | Should -Be 2
+        }
+    }
+
+    Context "keyvault does not exists" {
+        BeforeAll {
+            Mock Invoke-CdfAdoRestMethod {
+                param($Uri, $Method, $Body)
+                $Result = @{
+                    PatTokens = @(
+                        @{
+                            displayName = "pat1"
+                            validFrom   = "2023-12-31T18:38:34.69Z"
+                            validTo     = "2024-01-01T18:38:34.69Z"
+                            scope       = "CodeRead"
+                            token       = "myPatToken1"
+                        },
+                        @{
+                            displayName = "pat2"
+                            validFrom   = "2023-12-31T18:38:34.69Z"
+                            validTo     = "2024-01-01T18:38:34.69Z"
+                            scope       = "PackagingRead"
+                            token       = "myPatToken2"
+                        }
+                    )
+                }
+                return $Result
+            } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Get-AzKeyVault { return $null } -ModuleName CloudDeploymentFramework -Verifiable
+        }
+
+        It "should throw" {
+            { Get-CdfAdoPersonalAccessToken -OrganizationName "organizationName" -KeyvaultName "keyvaultName" } | Should -Throw "Failed to look up keyvault secret of PAT 'pat1' from keyvault 'keyvaultName': Key vault 'keyvaultName' not found."
+            Assert-MockCalled Get-AzKeyVault -Exactly 1 -Scope It -ModuleName CloudDeploymentFramework
         }
     }
 }
