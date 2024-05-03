@@ -56,15 +56,20 @@ function Set-CdfAdoPersonalAccessToken {
             throw [Exception]::new("There are multiple personal access tokens with the same display name '{0}'" -f $PatDisplayName)
         }
 
+        $Method = "Post"
         if ($ExistingToken) {
-            $Method = "Put"
-            $tokenBody.authorizationId = $ExistingToken.authorizationId
-        }
-        else {
-            $Method = "Post"
+            if ($KeyVaultName) {
+                Remove-CdfAdoPersonalAccessToken -OrganizationName $OrganizationName -PatDisplayName $PatDisplayName -KeyVaultName $KeyVaultName
+            } else {
+                $Method = "Put"
+                $tokenBody.authorizationId = $ExistingToken.authorizationId
+            }
         }
 
         $Result = Invoke-CdfAdoRestMethod -OrganizationName $OrganizationName -Api "tokens/pats" -Method $Method -Body $tokenBody 
+        if ($Result.patTokenError -ne "none") {
+            throw [Exception]::new($Result.patTokenError)
+        }
     }
     catch {
         throw [Exception]::new(("Failed to create or update personal access token '{0}': {1}" -f $PatDisplayName, $_.Exception.Message), $_.Exception)
@@ -80,7 +85,7 @@ function Set-CdfAdoPersonalAccessToken {
         $validTo = [datetime]::Parse($PatTokenDetails.validTo)
 
         $secretValue = ConvertTo-SecureString $PatToken -AsPlainText -Force
-        Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $PatDisplayName -SecretValue $secretValue -NotBefore $validFrom -Expires $validTo
+        Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $PatDisplayName -SecretValue $secretValue -NotBefore $validFrom -Expires $validTo | Out-Null
     }
 
     if ($PSCmdlet.MyInvocation.BoundParameters['PassThru']) {

@@ -94,10 +94,11 @@ Describe "Test-CdfAdoPersonalAccessToken" {
                 param($OrganizationName, $PatDisplayName)
                 return [PSCustomObject]@(
                     [PSCustomObject]@{
-                        id          = "id"
-                        displayName = "pat"
-                        scope       = "scope"
-                        validTo     = "2020-01-01T00:00:00.000Z"
+                        id                    = "id"
+                        displayName           = "pat"
+                        scope                 = "scope"
+                        validTo               = "2020-01-01T00:00:00.000Z"
+                        KeyvaultSecretVersion = $null
                     }
                 )
             } -ModuleName CloudDeploymentFramework -Verifiable

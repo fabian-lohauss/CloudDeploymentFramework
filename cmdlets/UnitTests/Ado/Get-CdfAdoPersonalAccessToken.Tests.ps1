@@ -25,18 +25,20 @@ Describe "Get-CdfAdoPersonalAccessToken" {
                 $Result = @{
                     PatTokens = @(
                         @{
-                            displayName = "pat1"
-                            validFrom   = "2023-12-31T18:38:34.69Z"
-                            validTo     = "2024-01-01T18:38:34.69Z"
-                            scope       = "CodeRead"
-                            token       = "myPatToken1"
+                            displayName     = "pat1"
+                            validFrom       = "2023-12-31T18:38:34.69Z"
+                            validTo         = "2024-01-01T18:38:34.69Z"
+                            scope           = "CodeRead"
+                            token           = "myPatToken1"
+                            authorizationId = "authId1"
                         },
                         @{
-                            displayName = "pat2"
-                            validFrom   = "2023-12-31T18:38:34.69Z"
-                            validTo     = "2024-01-01T18:38:34.69Z"
-                            scope       = "PackagingRead"
-                            token       = "myPatToken2"
+                            displayName     = "pat2"
+                            validFrom       = "2023-12-31T18:38:34.69Z"
+                            validTo         = "2024-01-01T18:38:34.69Z"
+                            scope           = "PackagingRead"
+                            token           = "myPatToken2"
+                            authorizationId = "authId2"
                         }
                     )
                 }
@@ -56,6 +58,7 @@ Describe "Get-CdfAdoPersonalAccessToken" {
             $PatTokens[0].OrganizationName | Should -BeOfType [System.String]
             $PatTokens[0].KeyvaultName | Should -BeOfType [System.String]
             $PatTokens[0].KeyvaultSecretVersion | Should -BeOfType [System.String]
+            $PatTokens[0].AuthorizationId | Should -BeOfType [System.String]
         }
     }
 

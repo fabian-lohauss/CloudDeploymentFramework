@@ -8,15 +8,19 @@ enum AdoScope {
 function New-CdfAdoPersonalAccessToken {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = "Ado", Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = "AdoAndKeyvault", Mandatory)]
         [string]$OrganizationName,
 
-        [Parameter(Mandatory)]
+        [Parameter(ParameterSetName = "Ado", Mandatory)]
+        [Parameter(ParameterSetName = "AdoAndKeyvault", Mandatory)]
         [string]$PatDisplayName,
 
-        [Parameter(Mandatory)]
+        [Parameter(ParameterSetName = "Ado", Mandatory)]
+        [Parameter(ParameterSetName = "AdoAndKeyvault", Mandatory)]
         [AdoScope[]]$Scope,
 
+        [Parameter(ParameterSetName = "AdoAndKeyvault", Mandatory)]
         [string]$KeyVaultName,
 
         [switch]$PassThru,
@@ -25,9 +29,17 @@ function New-CdfAdoPersonalAccessToken {
 
     )
 
-    if (Test-CdfAdoPersonalAccessToken -OrganizationName $OrganizationName -PatDisplayName $PatDisplayName -KeyVaultName $KeyVaultName) {
+    $Parameter = @{
+        OrganizationName = $OrganizationName
+        PatDisplayName   = $PatDisplayName
+    }
+    if ($PSCmdlet.ParameterSetName -eq "AdoAndKeyvault") {
+        $Parameter.KeyVaultName = $KeyVaultName
+    }
+
+    if (Test-CdfAdoPersonalAccessToken @Parameter) {
         if ($Force) {
-            Remove-CdfAdoPersonalAccessToken -OrganizationName $OrganizationName -PatDisplayName $PatDisplayName -KeyVaultName $KeyVaultName
+            Remove-CdfAdoPersonalAccessToken @Parameter
         }
         else {
             throw ("Failed to create new personal access token '{0}': Personal access token already exists" -f $PatDisplayName)
@@ -35,7 +47,7 @@ function New-CdfAdoPersonalAccessToken {
     }
 
     try {
-        $Result = Set-CdfAdoPersonalAccessToken -OrganizationName $OrganizationName -PatDisplayName $PatDisplayName -Scope $Scope -KeyVaultName $KeyVaultName -PassThru
+        $Result = Set-CdfAdoPersonalAccessToken @Parameter -Scope $Scope -PassThru
     }
     catch {
         throw [Exception]::new("Failed to create new personal access token '{0}'" -f $PatDisplayName, $_.Exception)

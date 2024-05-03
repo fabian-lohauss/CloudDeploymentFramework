@@ -46,6 +46,7 @@ function Get-CdfAdoPersonalAccessToken {
             ValidFrom             = $PatToken.validFrom
             ValidTo               = $PatToken.validTo
             Scope                 = $PatToken.scope
+            AuthorizationId       = $PatToken.authorizationId
             OrganizationName      = $OrganizationName
             KeyvaultName          = $KeyvaultName
             KeyvaultSecretVersion = $KeyvaultSecretVersion 

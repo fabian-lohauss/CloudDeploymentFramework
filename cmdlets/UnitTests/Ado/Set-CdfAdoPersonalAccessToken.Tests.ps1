@@ -52,6 +52,24 @@ Describe "Set-CdfAdoPersonalAccessToken" {
             }
         }
     }
+
+    Context "PatTokenError" {
+        BeforeAll {
+            Mock Invoke-CdfAdoRestMethod {
+                param($Uri, $Method, $Body)
+                $Result = @{
+                    patToken      = $null
+                    patTokenError = "invalidAuthorizationId"
+                }
+                return $Result
+            } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Get-CdfAdoPersonalAccessToken { return @{ DisplayName = "displayName" } } -ModuleName CloudDeploymentFramework -Verifiable
+        }
+
+        It "should throw" {
+            { Set-CdfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "displayName" -Scope PackagingRead } | Should -Throw "Failed to create or update personal access token 'displayName': invalidAuthorizationId"
+        }
+    }
   
     Context "new PAT without KeyVault" {
         BeforeAll {
@@ -182,5 +200,41 @@ Describe "Set-CdfAdoPersonalAccessToken" {
         It "should throw" {
             { Set-CdfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" } | Should -Throw "Failed to create or update personal access token 'myNewPat': There are multiple personal access tokens with the same display name 'myNewPat'"
         }
+    }
+
+    Context "existing PAT with keyvault parameter" {
+        BeforeAll {
+            Mock Get-CdfAdoPersonalAccessToken { return @(
+                    [PSCustomObject]@{
+                        authorizationid = "c64e9eda-e076-46d2-bb3a-1b39ffbb7298"
+                        displayName     = "myExistingPat"
+                        scope           = "vso.packaging"
+                        validTo         = "2023-12-31T18:38:34.69Z"
+                    }
+                ) } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Invoke-CdfAdoRestMethod {
+                param($Uri, $Method, $Body)
+                $Result = @{
+                    patToken      = @{
+                        displayName = $Body.displayName
+                        validFrom   = "2023-12-31T18:38:34.69Z"
+                        validTo     = $Body.validTo
+                        scope       = $Body.scope
+                        token       = "myNewPatToken"
+                    }
+                    patTokenError = "none"
+                }
+                return $Result
+            } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Remove-CdfAdoPersonalAccessToken { } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Set-AzKeyVaultSecret { } -ModuleName CloudDeploymentFramework -Verifiable
+        }
+
+        It "should call Remove-CdfAdoPersonalAccessToken" {
+            Set-CdfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "myKeyVault"
+            Assert-MockCalled Remove-CdfAdoPersonalAccessToken -Exactly 1 -ModuleName CloudDeploymentFramework -ParameterFilter { 
+                $PatDisplayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and $KeyVaultName -eq "myKeyVault"
+            }
+         }
     }
 }
