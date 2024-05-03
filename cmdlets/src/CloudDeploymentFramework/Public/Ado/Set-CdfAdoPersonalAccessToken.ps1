@@ -83,7 +83,6 @@ function Set-CdfAdoPersonalAccessToken {
         Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $PatDisplayName -SecretValue $secretValue -NotBefore $validFrom -Expires $validTo
     }
 
-    # convert secret to a string for display
     if ($PSCmdlet.MyInvocation.BoundParameters['PassThru']) {
         return [PSCustomObject]$PatTokenDetails
     }

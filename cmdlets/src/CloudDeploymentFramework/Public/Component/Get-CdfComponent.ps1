@@ -21,7 +21,7 @@ function Get-CdfComponent {
                             Name    = $ComponentFolder.BaseName; 
                             Version = $VersionFromFolder
                             Path    = ($VersionFolder | Get-ChildItem).FullName
-                            Type    = "Bicep"
+                            Type    = "Bicep" 
                         }
                         New-Object -TypeName PSCustomObject -Property $Properties
                     }        

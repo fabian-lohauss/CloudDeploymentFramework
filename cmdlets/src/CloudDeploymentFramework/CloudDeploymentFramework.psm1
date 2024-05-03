@@ -1,4 +1,3 @@
-# dotsource all the files in the public folder and subfolders
 
 $PublicFolder = Join-Path $PSScriptRoot -ChildPath "Public"
 $PublicFiles = Get-ChildItem -Path $PublicFolder -Recurse -Include *.ps1
@@ -7,5 +6,4 @@ foreach ($File in $PublicFiles) {
     . $File.FullName
 }
 
-# Export the public functions
 Export-ModuleMember -Function $ImportedFunction

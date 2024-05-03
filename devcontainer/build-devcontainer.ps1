@@ -1,6 +1,5 @@
 Push-Location $PSScriptRoot
 
-# Remove all images
 docker images --quiet | Sort-Object -Unique | ForEach-Object { 
     docker image remove $_ --force 
 }
