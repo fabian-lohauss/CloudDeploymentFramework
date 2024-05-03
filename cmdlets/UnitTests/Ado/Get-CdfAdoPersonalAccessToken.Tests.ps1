@@ -5,6 +5,7 @@ BeforeAll {
 Describe "Get-CdfAdoPersonalAccessToken" {
     BeforeAll {
         Mock Invoke-CdfAdoRestMethod { } -ModuleName CloudDeploymentFramework -Verifiable
+        Mock Get-AzKeyVaultSecret { } -ModuleName CloudDeploymentFramework -Verifiable
     }
 
     Context "Parameterset" {
@@ -17,7 +18,48 @@ Describe "Get-CdfAdoPersonalAccessToken" {
         }
     }
 
-    Context "without filter" {
+    Context "result schema" {
+        BeforeAll {
+            Mock Invoke-CdfAdoRestMethod {
+                param($Uri, $Method, $Body)
+                $Result = @{
+                    PatTokens = @(
+                        @{
+                            displayName = "pat1"
+                            validFrom   = "2023-12-31T18:38:34.69Z"
+                            validTo     = "2024-01-01T18:38:34.69Z"
+                            scope       = "CodeRead"
+                            token       = "myPatToken1"
+                        },
+                        @{
+                            displayName = "pat2"
+                            validFrom   = "2023-12-31T18:38:34.69Z"
+                            validTo     = "2024-01-01T18:38:34.69Z"
+                            scope       = "PackagingRead"
+                            token       = "myPatToken2"
+                        }
+                    )
+                }
+                return $Result
+            } -ModuleName CloudDeploymentFramework -Verifiable
+        }
+
+        It "should return an array of PATs" {
+            $PatTokens = Get-CdfAdoPersonalAccessToken -OrganizationName "organizationName"
+            $PatTokens | Should -BeOfType [PSCustomObject]
+            $PatTokens[0] | Should -BeOfType [PSCustomObject]
+            $PatTokens[0].DisplayName | Should -BeOfType [System.String]
+            $PatTokens[0].ValidFrom | Should -BeOfType [System.String]
+            $PatTokens[0].ValidTo | Should -BeOfType [System.String]
+            $PatTokens[0].Scope | Should -BeOfType [System.String]
+            $PatTokens[0].Token | Should -BeOfType [System.String]
+            $PatTokens[0].OrganizationName | Should -BeOfType [System.String]
+            $PatTokens[0].KeyvaultName | Should -BeOfType [System.String]
+            $PatTokens[0].KeyvaultSecretVersion | Should -BeOfType [System.String]
+        }
+    }
+
+    Context "without PAT filter" {
         BeforeAll {
             Mock Invoke-CdfAdoRestMethod {
                 param($Uri, $Method, $Body)
@@ -51,7 +93,7 @@ Describe "Get-CdfAdoPersonalAccessToken" {
         }
     }
 
-    Context "with filter" {
+    Context "with PAT filter" {
         BeforeAll {
             Mock Invoke-CdfAdoRestMethod {
                 param($Uri, $Method, $Body)
@@ -150,6 +192,90 @@ Describe "Get-CdfAdoPersonalAccessToken" {
         It "should return an empty array" {
             $PatTokens = Get-CdfAdoPersonalAccessToken -OrganizationName "organizationName" -PatDisplayName "pat3"
             $PatTokens.Count | Should -Be 0
+        }
+    }
+
+    Context "with KeyvaultName parameter" {
+        BeforeAll {
+            Mock Invoke-CdfAdoRestMethod {
+                param($Uri, $Method, $Body)
+                $Result = @{
+                    PatTokens = @(
+                        @{
+                            displayName = "pat1"
+                            validFrom   = "2023-12-31T18:38:34.69Z"
+                            validTo     = "2024-01-01T18:38:34.69Z"
+                            scope       = "CodeRead"
+                            token       = "myPatToken1"
+                        },
+                        @{
+                            displayName = "pat2"
+                            validFrom   = "2023-12-31T18:38:34.69Z"
+                            validTo     = "2024-01-01T18:38:34.69Z"
+                            scope       = "PackagingRead"
+                            token       = "myPatToken2"
+                        }
+                    )
+                }
+                return $Result
+            } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Get-AzKeyVaultSecret {
+                param($VaultName, $Name)
+                return [PSCustomObject]@{
+                    Version = "$Name-version"
+                }
+            } -ModuleName CloudDeploymentFramework -Verifiable
+        }
+
+        It "should return PATs with KeyvaultSecretVersion" {
+            $PatTokens = Get-CdfAdoPersonalAccessToken -OrganizationName "organizationName" -KeyvaultName "keyvaultName"
+            $PatTokens[0].KeyvaultSecretVersion | Should -Be "pat1-version"
+            $PatTokens[1].KeyvaultSecretVersion | Should -Be "pat2-version"
+        }
+
+        It "should return PATs with KeyvaultSecretVersion as null if secret not found" {
+            Mock Get-AzKeyVaultSecret { return $null } -ModuleName CloudDeploymentFramework -Verifiable
+            $PatTokens = Get-CdfAdoPersonalAccessToken -OrganizationName "organizationName" -KeyvaultName "keyvaultName"
+            $PatTokens[0].KeyvaultSecretVersion | Should -Be $null
+            $PatTokens[1].KeyvaultSecretVersion | Should -Be $null
+        }
+
+        It "should throw if Get-AzKeyVaultSecret throws" {
+            Mock Get-AzKeyVaultSecret { throw "Get-AzKeyVaultSecret: some exception." } -ModuleName CloudDeploymentFramework -Verifiable
+            { Get-CdfAdoPersonalAccessToken -OrganizationName "organizationName" -KeyvaultName "keyvaultName" } | Should -Throw "Failed to look up keyvault secret of PAT 'pat1' from keyvault 'keyvaultName': Get-AzKeyVaultSecret: some exception."
+        }
+    }
+
+    Context "with exception from Get-AzKeyVaultSecret" {
+        BeforeAll {
+            Mock Invoke-CdfAdoRestMethod {
+                param($Uri, $Method, $Body)
+                $Result = @{
+                    PatTokens = @(
+                        @{
+                            displayName = "pat1"
+                            validFrom   = "2023-12-31T18:38:34.69Z"
+                            validTo     = "2024-01-01T18:38:34.69Z"
+                            scope       = "CodeRead"
+                            token       = "myPatToken1"
+                        },
+                        @{
+                            displayName = "pat2"
+                            validFrom   = "2023-12-31T18:38:34.69Z"
+                            validTo     = "2024-01-01T18:38:34.69Z"
+                            scope       = "PackagingRead"
+                            token       = "myPatToken2"
+                        }
+                    )
+                }
+                return $Result
+            } -ModuleName CloudDeploymentFramework -Verifiable
+        }
+
+        It "should ignore [System.ArgumentException]: Invalid ObjectIdentifier" {
+            Mock Get-AzKeyVaultSecret { throw [System.ArgumentException]"Invalid ObjectIdentifier" } -ModuleName CloudDeploymentFramework -Verifiable
+            $PatTokens = Get-CdfAdoPersonalAccessToken -OrganizationName "organizationName" -KeyvaultName "keyvaultName"
+            $PatTokens.Count | Should -Be 2
         }
     }
 }

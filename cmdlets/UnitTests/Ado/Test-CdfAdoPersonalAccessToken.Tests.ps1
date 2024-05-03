@@ -87,4 +87,23 @@ Describe "Test-CdfAdoPersonalAccessToken" {
             Test-CdfAdoPersonalAccessToken -OrganizationName "organizationName" -PatDisplayName "pat" | Should -Be $false
         }
     }
+
+    Context "PAT is not in the keyvault" {
+        BeforeAll {
+            Mock Get-CdfAdoPersonalAccessToken {
+                param($OrganizationName, $PatDisplayName)
+                return [PSCustomObject]@(
+                    [PSCustomObject]@{
+                        id          = "id"
+                        displayName = "pat"
+                        scope       = "scope"
+                        validTo     = "2020-01-01T00:00:00.000Z"
+                    }
+                )
+            } -ModuleName CloudDeploymentFramework -Verifiable
+        }
+        It "should return false" {
+            Test-CdfAdoPersonalAccessToken -OrganizationName "organizationName" -PatDisplayName "pat" | Should -Be $false
+        }
+    }
 }
