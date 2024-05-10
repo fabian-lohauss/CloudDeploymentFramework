@@ -2,24 +2,16 @@ function Test-CdfAdoPersonalAccessToken {
     [CmdletBinding()]
     param (
         [Parameter(ParameterSetName ='Ado', Mandatory, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName ='AdoAndKeyVault', Mandatory, ValueFromPipelineByPropertyName)]
         [string]$OrganizationName,
 
         [Parameter(ParameterSetName ='Ado', Mandatory = $true)]
-        [Parameter(ParameterSetName ='AdoAndKeyVault', Mandatory = $true)]
-        [string]$PatDisplayName,
-
-        [Parameter(ParameterSetName = 'AdoAndKeyVault', Mandatory = $true)]
-        [string]$KeyVaultName
+        [string]$PatDisplayName
     )
 
     try {
         $Parameter = @{
             OrganizationName = $OrganizationName
             PatDisplayName   = $PatDisplayName
-        }
-        if ($PSCmdlet.ParameterSetName -eq "AdoAndKeyVault") {
-            $Parameter.KeyVaultName = $KeyVaultName
         }
 
         $PatTokens = Get-CdfAdoPersonalAccessToken @Parameter
@@ -34,9 +26,6 @@ function Test-CdfAdoPersonalAccessToken {
             return $false
         }
 
-        if ($PSCmdlet.ParameterSetName -eq "AdoAndKeyVault" -and ([string]::IsNullOrEmpty($PatToken.KeyvaultSecretVersion))) {
-            return $false
-        }
         return $true
     }
     catch {

@@ -4,9 +4,7 @@ function Get-CdfAdoPersonalAccessToken {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [string]$OrganizationName,
 
-        [string]$PatDisplayName,
-
-        [string]$KeyvaultName
+        [string]$PatDisplayName
     )
 
     try {
@@ -22,24 +20,6 @@ function Get-CdfAdoPersonalAccessToken {
 
     $ResultObjects = @()
     foreach ($PatToken in $PatTokens) {
-        if (-not [string]::IsNullOrEmpty($KeyvaultName)) {
-            try {
-                $KeyVault = Get-AzKeyVault -VaultName $KeyvaultName 
-                if (-not $KeyVault) {
-                    throw [Exception]::new(("Key vault '{0}' not found." -f $KeyvaultName))
-                }
-                $KeyvaultSecretVersion = ($KeyVault | Get-AzKeyVaultSecret -Name $PatToken.DisplayName -ErrorAction Stop).Version
-            }
-            catch [System.ArgumentException] {
-                $KeyvaultSecretVersion = [string]$null
-            }
-            catch {
-                throw [Exception]::new(("Failed to look up keyvault secret of PAT '{0}' from keyvault '{1}': {2}" -f $PatToken.DisplayName, $KeyvaultName, $_.Exception.Message), $_.Exception)
-            }
-        }
-        else {
-            $KeyvaultSecretVersion = [string]$null
-        }
         $ResultObjects += [PSCustomObject]@{
             DisplayName           = $PatToken.displayName
             Token                 = $PatToken.token
@@ -48,8 +28,6 @@ function Get-CdfAdoPersonalAccessToken {
             Scope                 = $PatToken.scope
             AuthorizationId       = $PatToken.authorizationId
             OrganizationName      = $OrganizationName
-            KeyvaultName          = $KeyvaultName
-            KeyvaultSecretVersion = $KeyvaultSecretVersion 
         }
     }
 

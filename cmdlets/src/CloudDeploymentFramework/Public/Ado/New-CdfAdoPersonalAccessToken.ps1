@@ -23,6 +23,9 @@ function New-CdfAdoPersonalAccessToken {
         [Parameter(ParameterSetName = "AdoAndKeyvault", Mandatory)]
         [string]$KeyVaultName,
 
+        [Parameter(ParameterSetName = "AdoAndKeyvault")]
+        [switch]$AllowKeyVaultNetworkRuleUpdate,
+
         [switch]$PassThru,
 
         [switch]$Force
@@ -32,9 +35,6 @@ function New-CdfAdoPersonalAccessToken {
     $Parameter = @{
         OrganizationName = $OrganizationName
         PatDisplayName   = $PatDisplayName
-    }
-    if ($PSCmdlet.ParameterSetName -eq "AdoAndKeyvault") {
-        $Parameter.KeyVaultName = $KeyVaultName
     }
 
     if (Test-CdfAdoPersonalAccessToken @Parameter) {
@@ -47,6 +47,11 @@ function New-CdfAdoPersonalAccessToken {
     }
 
     try {
+        if ($PSCmdlet.ParameterSetName -eq "AdoAndKeyvault") {
+            $Parameter.KeyVaultName = $KeyVaultName
+            $Parameter.AllowKeyVaultNetworkRuleUpdate = $AllowKeyVaultNetworkRuleUpdate
+        }
+        
         $Result = Set-CdfAdoPersonalAccessToken @Parameter -Scope $Scope -PassThru
     }
     catch {

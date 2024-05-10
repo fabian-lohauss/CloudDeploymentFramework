@@ -23,6 +23,8 @@ function Set-CdfAdoPersonalAccessToken {
 
         [string]$KeyVaultName,
 
+        [switch]$AllowKeyVaultNetworkRuleUpdate,
+
         [switch]$PassThru
 
     )
@@ -81,11 +83,16 @@ function Set-CdfAdoPersonalAccessToken {
 
     if (-not [string]::IsNullOrEmpty($KeyVaultName)) {
         $PatToken = $PatTokenDetails.token
-        $validFrom = [datetime]::Parse($PatTokenDetails.validFrom)
-        $validTo = [datetime]::Parse($PatTokenDetails.validTo)
+        $Parameters = @{
+            Name   = $PatDisplayName
+            VaultName     = $KeyVaultName
+            SecretValue  = $PatTokenDetails
+            NotBefore = [datetime]::Parse($PatTokenDetails.validFrom)
+            Expires = [datetime]::Parse($PatTokenDetails.validTo)
+            AllowKeyVaultNetworkRuleUpdate = $AllowKeyVaultNetworkRuleUpdate
+        }
 
-        $secretValue = ConvertTo-SecureString $PatToken -AsPlainText -Force
-        Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $PatDisplayName -SecretValue $secretValue -NotBefore $validFrom -Expires $validTo | Out-Null
+        Set-CdfSecret @Parameters -SecretValue (ConvertTo-SecureString $PatToken -AsPlainText)  | Out-Null
     }
 
     if ($PSCmdlet.MyInvocation.BoundParameters['PassThru']) {

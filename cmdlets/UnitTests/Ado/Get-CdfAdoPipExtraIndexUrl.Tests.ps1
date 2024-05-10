@@ -5,11 +5,11 @@ BeforeAll {
 Describe "Get-CdfAdoPipExtraIndexUrl" {
     Context "token in keyvault" {
         BeforeAll {
-            Mock Get-AzKeyVaultSecret -ParameterFilter { $Name -eq "PatDisplayName" } { 
+            Mock Get-CdfSecret -ParameterFilter { $Name -eq "PatDisplayName" } { 
                 Function Get-MockSecret {
                     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification='Used for mocking in tests only')]
                     param()
-                    return [PSCustomObject]@{ SecretValue = ("my-token" | ConvertTo-SecureString -AsPlainText -Force) }
+                    return [PSCustomObject]@{ SecretValue = ("my-token" | ConvertTo-SecureString -AsPlainText) }
                 }
                 return Get-MockSecret
             } -ModuleName CloudDeploymentFramework

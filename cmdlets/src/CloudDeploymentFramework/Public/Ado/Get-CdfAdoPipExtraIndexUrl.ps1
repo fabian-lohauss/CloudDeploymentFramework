@@ -17,7 +17,7 @@ Function Get-CdfAdoPipExtraIndexUrl {
         [string]$FeedName
     )
 
-    $HexString = (Get-AzKeyVaultSecret -VaultName $KeyvaultName -Name $PatDisplayName).SecretValue | ConvertFrom-SecureString 
+    $HexString = (Get-CdfSecret -VaultName $KeyvaultName -Name $PatDisplayName).SecretValue | ConvertFrom-SecureString 
     
     $bytes = for ($i = 0; $i -lt $HexString.Length; $i += 2) {
         [Convert]::ToByte($HexString.Substring($i, 2), 16)

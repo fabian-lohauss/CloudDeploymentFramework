@@ -113,12 +113,24 @@ Describe "New-CdfAdoPersonalAccessToken" {
 
         It "should call Remove-CdfAdoPersonalAccessToken" {
             New-CdfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force
-            Assert-MockCalled Remove-CdfAdoPersonalAccessToken -Scope It -ParameterFilter { $PatDisplayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and $KeyVaultName -eq "TheKeyvault"  } -ModuleName CloudDeploymentFramework
+            Assert-MockCalled Remove-CdfAdoPersonalAccessToken -Scope It -ParameterFilter { $PatDisplayName -eq "myNewPat" -and $organizationName -eq "organizationName" } -ModuleName CloudDeploymentFramework
         }
 
         It "should call Set-CdfAdoPersonalAccessToken" {
             New-CdfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -Force
             Assert-MockCalled Set-CdfAdoPersonalAccessToken -Scope It -ParameterFilter { $PatDisplayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and "PackagingRead" -eq $scope -and $KeyVaultName -eq "TheKeyvault" } -ModuleName CloudDeploymentFramework
+        }
+    }
+
+    Context "Parameter AllowKeyvaultNetworkRuleUpdate" {
+        BeforeAll {
+            Mock Test-CdfAdoPersonalAccessToken { return $false } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Set-CdfAdoPersonalAccessToken { } -ModuleName CloudDeploymentFramework -Verifiable
+        }
+
+        It "should pass AllowKeyvaultNetworkRuleUpdate to Set-CdfAdoPersonalAccessToken" {
+            New-CdfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -KeyVaultName kv -AllowKeyvaultNetworkRuleUpdate
+            Assert-MockCalled Set-CdfAdoPersonalAccessToken -Exactly 1 -ParameterFilter { $AllowKeyvaultNetworkRuleUpdate -eq $true } -ModuleName CloudDeploymentFramework
         }
     }
 }

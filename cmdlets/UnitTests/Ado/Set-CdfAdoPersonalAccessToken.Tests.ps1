@@ -7,7 +7,7 @@ Describe "Set-CdfAdoPersonalAccessToken" {
     BeforeAll {
         Mock Get-CdfAdoPersonalAccessToken { throw "Get-CdfAdoPersonalAccessToken should be mocked" } -ModuleName CloudDeploymentFramework -Verifiable
         Mock Invoke-CdfAdoRestMethod { } -ModuleName CloudDeploymentFramework -Verifiable
-        Mock Set-AzKeyVaultSecret { } -ModuleName CloudDeploymentFramework -Verifiable
+        Mock Set-CdfSecret { } -ModuleName CloudDeploymentFramework -Verifiable
     }
 
     Context "Parameterset" {
@@ -131,12 +131,12 @@ Describe "Set-CdfAdoPersonalAccessToken" {
                 }
                 return $Result
             } -ModuleName CloudDeploymentFramework -Verifiable
-            Mock Set-AzKeyVaultSecret { } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Set-CdfSecret { } -ModuleName CloudDeploymentFramework -Verifiable
         }
 
-        It "should call Set-AzKeyVaultSecret" {
+        It "should call Set-CdfSecret" {
             Set-CdfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "myKeyVault"
-            Assert-MockCalled Set-AzKeyVaultSecret -Exactly 1 -ModuleName CloudDeploymentFramework -ParameterFilter { 
+            Assert-MockCalled Set-CdfSecret -Exactly 1 -ModuleName CloudDeploymentFramework -ParameterFilter { 
                 $Name -eq "myNewPat" -and $VaultName -eq "myKeyVault" -and (ConvertFrom-SecureString $secretValue -AsPlainText) -eq "myNewPatToken" -and $NotBefore -eq "2023-12-31T18:38:34.69Z" -and $Expires -eq "2024-01-31T18:38:34.69Z" 
             }
         }
@@ -227,7 +227,7 @@ Describe "Set-CdfAdoPersonalAccessToken" {
                 return $Result
             } -ModuleName CloudDeploymentFramework -Verifiable
             Mock Remove-CdfAdoPersonalAccessToken { } -ModuleName CloudDeploymentFramework -Verifiable
-            Mock Set-AzKeyVaultSecret { } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Set-CdfSecret { } -ModuleName CloudDeploymentFramework -Verifiable
         }
 
         It "should call Remove-CdfAdoPersonalAccessToken" {
@@ -236,5 +236,32 @@ Describe "Set-CdfAdoPersonalAccessToken" {
                 $PatDisplayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and $KeyVaultName -eq "myKeyVault"
             }
          }
+    }
+
+    Context "Parameter AllowKeyVaultNetworkRuleUpdate is set" {
+        BeforeAll {
+            Mock Get-CdfAdoPersonalAccessToken { return $null } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Get-Date { return [datetime]"2024-01-01T18:38:34.69Z" } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Invoke-CdfAdoRestMethod {
+                param($Uri, $Method, $Body)
+                $Result = [PSCustomObject]@{
+                    patToken      = [PSCustomObject]@{
+                        displayName = $Body.displayName
+                        validFrom   = "2023-12-31T18:38:34.69Z"
+                        validTo     = $Body.validTo
+                        scope       = $Body.scope
+                        token       = "myNewPatToken"
+                    }
+                    patTokenError = "none"
+                }
+                return $Result
+            } -ModuleName CloudDeploymentFramework -Verifiable
+            Mock Set-CdfSecret { } -ModuleName CloudDeploymentFramework -Verifiable
+        }
+
+        It "should pass AllowKeyVaultNetworkRuleUpdate to Set-CdfSecret" {
+            Set-CdfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "TheKeyvault" -AllowKeyVaultNetworkRuleUpdate
+            Assert-MockCalled Set-CdfSecret -Exactly 1 -ModuleName CloudDeploymentFramework -ParameterFilter { $AllowKeyVaultNetworkRuleUpdate -eq $true }
+        }
     }
 }
