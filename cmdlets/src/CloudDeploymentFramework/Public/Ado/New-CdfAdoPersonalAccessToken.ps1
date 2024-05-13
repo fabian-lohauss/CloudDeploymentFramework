@@ -9,7 +9,7 @@ function New-CdfAdoPersonalAccessToken {
     [CmdletBinding()]
     param(
         [Parameter(ParameterSetName = "Ado", Mandatory, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = "AdoAndKeyvault", Mandatory)]
+        [Parameter(ParameterSetName = "AdoAndKeyvault", Mandatory, ValueFromPipelineByPropertyName)]
         [string]$OrganizationName,
 
         [Parameter(ParameterSetName = "Ado", Mandatory)]
