@@ -5,6 +5,7 @@ Function Test-CdfSecret{
         [string]$VaultName,
 
         [Parameter(Mandatory=$true)]
+        [Alias("SecretName")]
         [string]$Name,
 
         [switch]$AllowKeyVaultNetworkRuleUpdate

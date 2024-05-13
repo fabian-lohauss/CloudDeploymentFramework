@@ -9,12 +9,16 @@ Function Get-CdfSecret {
         [Parameter(ParameterSetName="AllowKeyVaultNetworkRuleUpdate" , Mandatory)]
         [string]$Name,
 
+        [Parameter(ParameterSetName="default")]
+        [Parameter(ParameterSetName="AllowKeyVaultNetworkRuleUpdate")]
+        [switch]$AsPlainText,
+
         [Parameter(ParameterSetName="AllowKeyVaultNetworkRuleUpdate" , Mandatory)]
         [switch]$AllowKeyVaultNetworkRuleUpdate
     )
 
     try {
-        $secret = Get-AzKeyVaultSecret -VaultName $VaultName -Name $Name -ErrorAction Stop
+        $secret = Get-AzKeyVaultSecret -VaultName $VaultName -Name $Name -AsPlainText:$AsPlainText -ErrorAction Stop
     }
     catch {
         if (-not $AllowKeyVaultNetworkRuleUpdate) {
@@ -26,7 +30,7 @@ Function Get-CdfSecret {
         if ($regex.IsMatch($message)) {
             $ipAddress = $regex.Match($message).Groups['IP'].Value
             Add-AzKeyVaultNetworkRule -VaultName $VaultName -IpAddressRange $ipAddress
-            $secret = Get-AzKeyVaultSecret -VaultName $VaultName -Name $Name -ErrorAction Stop
+            $secret = Get-AzKeyVaultSecret -VaultName $VaultName -Name $Name -AsPlainText:$AsPlainText -ErrorAction Stop
         }
         else {
             throw $_
