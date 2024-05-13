@@ -14,6 +14,7 @@ function New-CdfAdoPersonalAccessToken {
 
         [Parameter(ParameterSetName = "Ado", Mandatory)]
         [Parameter(ParameterSetName = "AdoAndKeyvault", Mandatory)]
+        [Alias("SecretName")]
         [string]$PatDisplayName,
 
         [Parameter(ParameterSetName = "Ado", Mandatory)]
@@ -21,6 +22,7 @@ function New-CdfAdoPersonalAccessToken {
         [AdoScope[]]$Scope,
 
         [Parameter(ParameterSetName = "AdoAndKeyvault", Mandatory)]
+        [Alias("VaultName")	]
         [string]$KeyVaultName,
 
         [Parameter(ParameterSetName = "AdoAndKeyvault")]
