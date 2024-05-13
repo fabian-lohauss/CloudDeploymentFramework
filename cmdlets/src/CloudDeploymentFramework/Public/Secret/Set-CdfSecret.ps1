@@ -2,12 +2,14 @@ Function Set-CdfSecret {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
+        [Alias("SecretName")]
         [string]$Name,
 
         [Parameter(Mandatory)]
         [SecureString]$SecretValue,
 
         [Parameter(Mandatory)]
+        [Alias("KeyvaultName")]
         [string]$VaultName,
 
         [datetime]$NotBefore,

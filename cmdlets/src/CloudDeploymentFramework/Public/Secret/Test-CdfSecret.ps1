@@ -2,6 +2,7 @@ Function Test-CdfSecret{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
+        [Alias("KeyvaultName")]
         [string]$VaultName,
 
         [Parameter(Mandatory=$true)]

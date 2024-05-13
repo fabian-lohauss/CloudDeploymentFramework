@@ -3,10 +3,12 @@ Function Get-CdfSecret {
     param(
         [Parameter(ParameterSetName="default" , Mandatory)]
         [Parameter(ParameterSetName="AllowKeyVaultNetworkRuleUpdate" , Mandatory)]
+        [Alias("KeyvaultName")]
         [string]$VaultName,
 
         [Parameter(ParameterSetName="default" , Mandatory)]
         [Parameter(ParameterSetName="AllowKeyVaultNetworkRuleUpdate" , Mandatory)]
+        [Alias("SecretName")]
         [string]$Name,
 
         [Parameter(ParameterSetName="default")]
