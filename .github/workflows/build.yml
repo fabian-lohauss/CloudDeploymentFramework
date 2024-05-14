@@ -14,6 +14,8 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  release:
+    types: [released]
 
 permissions:
   contents: read
@@ -81,12 +83,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build and publish
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         shell: pwsh
         run: |
-          . ./cmdlets/nuget/Publish-CdfModule.ps1 -NuGetApiKey $env:NUGET_API_KEY
-          
+          . ./cmdlets/nuget/Publish-CdfModule.ps1 -NuGetApiKey $env:NUGET_API_KEY -NewRelease:($env:GITHUB_EVENT_NAME -eq "release")
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+
+  
 
           
 
