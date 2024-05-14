@@ -5,9 +5,7 @@ function Remove-CdfAdoPersonalAccessToken {
         [string]$OrganizationName,
 
         [Parameter(Mandatory = $true)]
-        [string]$PatDisplayName,
-
-        [string]$KeyVaultName
+        [string]$PatDisplayName
     )
 
     try {

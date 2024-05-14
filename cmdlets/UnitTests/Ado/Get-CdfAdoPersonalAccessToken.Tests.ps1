@@ -8,11 +8,11 @@ Describe "Get-CdfAdoPersonalAccessToken" {
     }
 
     Context "Parameterset" {
-        It "should have mandatory paramater OrganizationName" {
+        It "should have mandatory parameter OrganizationName" {
             Get-Command Get-CdfAdoPersonalAccessToken | Should -HaveParameter "OrganizationName" -Mandatory
         }
 
-        It "should have optional paramater PatDisplayName" {
+        It "should have optional parameter PatDisplayName" {
             Get-Command Get-CdfAdoPersonalAccessToken | Should -HaveParameter "PatDisplayName" 
         }
     }

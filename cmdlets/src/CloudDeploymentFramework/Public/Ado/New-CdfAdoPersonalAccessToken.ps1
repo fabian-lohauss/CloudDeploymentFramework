@@ -22,8 +22,8 @@ function New-CdfAdoPersonalAccessToken {
         [AdoScope[]]$Scope,
 
         [Parameter(ParameterSetName = "AdoAndKeyvault", Mandatory)]
-        [Alias("VaultName")	]
-        [string]$KeyVaultName,
+        [Alias("KeyvaultName")	]
+        [string]$VaultName,
 
         [Parameter(ParameterSetName = "AdoAndKeyvault")]
         [switch]$AllowKeyVaultNetworkRuleUpdate,
@@ -50,7 +50,7 @@ function New-CdfAdoPersonalAccessToken {
 
     try {
         if ($PSCmdlet.ParameterSetName -eq "AdoAndKeyvault") {
-            $Parameter.KeyVaultName = $KeyVaultName
+            $Parameter.KeyVaultName = $VaultName
             $Parameter.AllowKeyVaultNetworkRuleUpdate = $AllowKeyVaultNetworkRuleUpdate
         }
         

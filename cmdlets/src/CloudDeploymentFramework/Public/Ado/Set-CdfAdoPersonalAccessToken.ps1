@@ -7,7 +7,7 @@ enum AdoScope {
 
 function Set-CdfAdoPersonalAccessToken {
     [CmdletBinding()]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification='Required to encrypt clear text PAT from API')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Required to encrypt clear text PAT from API')]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [string]$OrganizationName,
@@ -21,7 +21,8 @@ function Set-CdfAdoPersonalAccessToken {
         [Parameter(Mandatory)]
         [AdoScope[]]$Scope,
 
-        [string]$KeyVaultName,
+        [Alias("KeyvaultName")]
+        [string]$VaultName,
 
         [switch]$AllowKeyVaultNetworkRuleUpdate,
 
@@ -60,12 +61,8 @@ function Set-CdfAdoPersonalAccessToken {
 
         $Method = "Post"
         if ($ExistingToken) {
-            if ($KeyVaultName) {
-                Remove-CdfAdoPersonalAccessToken -OrganizationName $OrganizationName -PatDisplayName $PatDisplayName -KeyVaultName $KeyVaultName
-            } else {
-                $Method = "Put"
-                $tokenBody.authorizationId = $ExistingToken.authorizationId
-            }
+            $Method = "Put"
+            $tokenBody.authorizationId = $ExistingToken.authorizationId
         }
 
         $Result = Invoke-CdfAdoRestMethod -OrganizationName $OrganizationName -Api "tokens/pats" -Method $Method -Body $tokenBody 
@@ -81,14 +78,14 @@ function Set-CdfAdoPersonalAccessToken {
     $PatTokenDetails | Add-Member -MemberType NoteProperty -Name OrganizationName -Value $OrganizationName -Force
     $PatTokenDetails | Add-Member -MemberType NoteProperty -Name UserName -Value $UserName -Force   
 
-    if (-not [string]::IsNullOrEmpty($KeyVaultName)) {
+    if (-not [string]::IsNullOrEmpty($VaultName)) {
         $PatToken = $PatTokenDetails.token
         $Parameters = @{
-            Name   = $PatDisplayName
-            VaultName     = $KeyVaultName
-            SecretValue  = $PatTokenDetails
-            NotBefore = [datetime]::Parse($PatTokenDetails.validFrom)
-            Expires = [datetime]::Parse($PatTokenDetails.validTo)
+            Name                           = $PatDisplayName
+            VaultName                      = $VaultName
+            SecretValue                    = $PatTokenDetails
+            NotBefore                      = [datetime]::Parse($PatTokenDetails.validFrom)
+            Expires                        = [datetime]::Parse($PatTokenDetails.validTo)
             AllowKeyVaultNetworkRuleUpdate = $AllowKeyVaultNetworkRuleUpdate
         }
 

@@ -10,16 +10,12 @@ Describe "Remove-CdfAdoPersonalAccessToken" {
     }
 
     Context "Parameterset" {
-        It "should have mandatory paramater OrganizationName " {
+        It "should have mandatory parameter OrganizationName " {
             Get-Command Remove-CdfAdoPersonalAccessToken | Should -HaveParameter "OrganizationName" -Mandatory
         }
 
-        It "should have mandatory paramater PatDisplayName " {
+        It "should have mandatory parameter PatDisplayName " {
             Get-Command Remove-CdfAdoPersonalAccessToken | Should -HaveParameter "PatDisplayName" -Mandatory
-        }
-
-        It "should have optional paramater KeyVaultName" {
-            Get-Command Remove-CdfAdoPersonalAccessToken | Should -HaveParameter "KeyVaultName" -Type "string"
         }
     }
 

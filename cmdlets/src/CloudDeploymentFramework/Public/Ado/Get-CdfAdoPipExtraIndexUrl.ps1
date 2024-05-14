@@ -8,16 +8,20 @@ Function Get-CdfAdoPipExtraIndexUrl {
         [string]$ProjectName,
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [string]$PatDisplayName,
+        [string]$SecretName,
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [string]$KeyvaultName,
+        [Alias("KeyaultName")]
+        [string]$VaultName,
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [string]$FeedName
+        [string]$FeedName,
+
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [switch]$AllowKeyVaultNetworkRuleUpdate
     )
 
-    $HexString = (Get-CdfSecret -VaultName $KeyvaultName -Name $PatDisplayName).SecretValue | ConvertFrom-SecureString 
+    $HexString = (Get-CdfSecret -VaultName $VaultName -Name $SecretName -AllowKeyVaultNetworkRuleUpdate:$AllowKeyVaultNetworkRuleUpdate).SecretValue | ConvertFrom-SecureString 
     
     $bytes = for ($i = 0; $i -lt $HexString.Length; $i += 2) {
         [Convert]::ToByte($HexString.Substring($i, 2), 16)

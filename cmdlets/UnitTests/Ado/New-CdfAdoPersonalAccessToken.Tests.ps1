@@ -10,28 +10,16 @@ Describe "New-CdfAdoPersonalAccessToken" {
     }
 
     Context "Parameterset" {
-        It "should have mandatory paramater OrganizationName " {
-            Get-Command New-CdfAdoPersonalAccessToken | Should -HaveParameter "OrganizationName" -Mandatory
-        }
-
-        It "should have mandatory paramater DisplayName " {
-            Get-Command New-CdfAdoPersonalAccessToken | Should -HaveParameter "PatDisplayName" -Mandatory
-        }
-
-        It "should have mandatory paramater scope" {
-            Get-Command New-CdfAdoPersonalAccessToken | Should -HaveParameter "Scope" -Mandatory
-        }
-
-        It "should have optional paramater KeyVaultName" {
-            Get-Command New-CdfAdoPersonalAccessToken | Should -HaveParameter "KeyVaultName" -Type String
-        }
-
-        It "should have optional paramater Passthru" {
-            Get-Command New-CdfAdoPersonalAccessToken | Should -HaveParameter "Passthru" -Type Switch
-        }
-
-        It "should have optional paramater Force" {
-            Get-Command New-CdfAdoPersonalAccessToken | Should -HaveParameter "Force" -Type Switch
+        It "should have mandatory parameter '[ParameterType]<ParameterName>' " -ForEach @(
+            @{ Name = "OrganizationName"; Mandatory = $true; Type = "string" }
+            @{ Name = "PatDisplayName"; Mandatory = $true; Type = "string" }
+            @{ Name = "Scope"; Mandatory = $true }
+            @{ Name = "VaultName"; Mandatory = $false; Type = "string" }
+            @{ Name = "AllowKeyVaultNetworkRuleUpdate"; Mandatory = $false; Type = "switch" }
+            @{ Name = "PassThru"; Mandatory = $false; Type = "switch" }
+            @{ Name = "Force"; Mandatory = $false; Type = "switch" }
+        ) {
+            Get-Command New-CdfAdoPersonalAccessToken | Should -HaveParameter $PSItem.Name -Type $PSItem.Type -Mandatory:$PSItem.Mandatory
         }
     }
 

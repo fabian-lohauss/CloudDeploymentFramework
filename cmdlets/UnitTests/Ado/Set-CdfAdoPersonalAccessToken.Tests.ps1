@@ -11,15 +11,15 @@ Describe "Set-CdfAdoPersonalAccessToken" {
     }
 
     Context "Parameterset" {
-        It "should have mandatory paramater OrganizationName " {
+        It "should have mandatory parameter OrganizationName " {
             Get-Command Set-CdfAdoPersonalAccessToken | Should -HaveParameter "OrganizationName" -Mandatory
         }
 
-        It "should have mandatory paramater PatDisplayName " {
+        It "should have mandatory parameter PatDisplayName " {
             Get-Command Set-CdfAdoPersonalAccessToken | Should -HaveParameter "PatDisplayName" -Mandatory
         }
 
-        It "should have mandatory paramater scope" {
+        It "should have mandatory parameter scope" {
             Get-Command Set-CdfAdoPersonalAccessToken | Should -HaveParameter "Scope" -Mandatory 
         }
 
@@ -27,8 +27,8 @@ Describe "Set-CdfAdoPersonalAccessToken" {
             Get-Command Set-CdfAdoPersonalAccessToken | Should -HaveParameter "UserName" -Type "string"
         }
 
-        It "should have optional parameter KeyVaultName" {
-            Get-Command Set-CdfAdoPersonalAccessToken | Should -HaveParameter "KeyVaultName" -Type "string"
+        It "should have optional parameter VaultName" {
+            Get-Command Set-CdfAdoPersonalAccessToken | Should -HaveParameter "VaultName" -Type "string"
         }
     }
 
@@ -200,42 +200,6 @@ Describe "Set-CdfAdoPersonalAccessToken" {
         It "should throw" {
             { Set-CdfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" } | Should -Throw "Failed to create or update personal access token 'myNewPat': There are multiple personal access tokens with the same display name 'myNewPat'"
         }
-    }
-
-    Context "existing PAT with keyvault parameter" {
-        BeforeAll {
-            Mock Get-CdfAdoPersonalAccessToken { return @(
-                    [PSCustomObject]@{
-                        authorizationid = "c64e9eda-e076-46d2-bb3a-1b39ffbb7298"
-                        displayName     = "myExistingPat"
-                        scope           = "vso.packaging"
-                        validTo         = "2023-12-31T18:38:34.69Z"
-                    }
-                ) } -ModuleName CloudDeploymentFramework -Verifiable
-            Mock Invoke-CdfAdoRestMethod {
-                param($Uri, $Method, $Body)
-                $Result = @{
-                    patToken      = @{
-                        displayName = $Body.displayName
-                        validFrom   = "2023-12-31T18:38:34.69Z"
-                        validTo     = $Body.validTo
-                        scope       = $Body.scope
-                        token       = "myNewPatToken"
-                    }
-                    patTokenError = "none"
-                }
-                return $Result
-            } -ModuleName CloudDeploymentFramework -Verifiable
-            Mock Remove-CdfAdoPersonalAccessToken { } -ModuleName CloudDeploymentFramework -Verifiable
-            Mock Set-CdfSecret { } -ModuleName CloudDeploymentFramework -Verifiable
-        }
-
-        It "should call Remove-CdfAdoPersonalAccessToken" {
-            Set-CdfAdoPersonalAccessToken -organizationName "organizationName" -PatDisplayName "myNewPat" -Scope "PackagingRead" -KeyVaultName "myKeyVault"
-            Assert-MockCalled Remove-CdfAdoPersonalAccessToken -Exactly 1 -ModuleName CloudDeploymentFramework -ParameterFilter { 
-                $PatDisplayName -eq "myNewPat" -and $organizationName -eq "organizationName" -and $KeyVaultName -eq "myKeyVault"
-            }
-         }
     }
 
     Context "Parameter AllowKeyVaultNetworkRuleUpdate is set" {

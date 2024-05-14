@@ -5,11 +5,11 @@ BeforeAll {
 
 Describe "Test-CdfAdoPersonalAccessToken" {
     Context "parameters" {
-        It "should have mandatory paramater OrganizationName" {
+        It "should have mandatory parameter OrganizationName" {
             Get-Command Test-CdfAdoPersonalAccessToken | Should -HaveParameter "OrganizationName" -Mandatory
         }
 
-        It "should have optional paramater PatDisplayName" {
+        It "should have optional parameter PatDisplayName" {
             Get-Command Test-CdfAdoPersonalAccessToken | Should -HaveParameter "PatDisplayName" -Mandatory
         }
 

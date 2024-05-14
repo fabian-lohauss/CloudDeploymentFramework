@@ -7,7 +7,7 @@ Describe "Get-CdfAdoPipExtraIndexUrl" {
         BeforeAll {
             Mock Get-CdfSecret -ParameterFilter { $Name -eq "PatDisplayName" } { 
                 Function Get-MockSecret {
-                    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification='Used for mocking in tests only')]
+                    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Used for mocking in tests only')]
                     param()
                     return [PSCustomObject]@{ SecretValue = ("my-token" | ConvertTo-SecureString -AsPlainText) }
                 }
@@ -18,8 +18,8 @@ Describe "Get-CdfAdoPipExtraIndexUrl" {
         It "Should return the correct URL" {
             $PipPATParameters = @{
                 OrganizationName = "my-organization"
-                PatDisplayName   = "PatDisplayName"
-                KeyvaultName     = "kv-test"
+                SecretName       = "PatDisplayName"
+                VaultName        = "kv-test"
             }
             $ProjectName = "my-project"
             $FeedName = "my-feed"
@@ -28,4 +28,46 @@ Describe "Get-CdfAdoPipExtraIndexUrl" {
         }
     }
 
+    Context "parameter set" {
+        It "should have mandatory parameter OrganizationName" {
+            Get-Command Get-CdfAdoPipExtraIndexUrl | Should -HaveParameter "OrganizationName" -Mandatory
+        }
+
+        It "should have mandatory parameter ProjectName" {
+            Get-Command Get-CdfAdoPipExtraIndexUrl | Should -HaveParameter "ProjectName" -Mandatory
+        }
+
+        It "should have mandatory parameter SecretName" {
+            Get-Command Get-CdfAdoPipExtraIndexUrl | Should -HaveParameter "SecretName" -Mandatory
+        }
+
+        It "should have mandatory parameter VaultName" {
+            Get-Command Get-CdfAdoPipExtraIndexUrl | Should -HaveParameter "VaultName" -Mandatory
+        }
+
+        It "should have mandatory parameter FeedName" {
+            Get-Command Get-CdfAdoPipExtraIndexUrl | Should -HaveParameter "FeedName" -Mandatory
+        }
+
+        It "should have optional parameter AllowKeyVaultNetworkRuleUpdate" {
+            Get-Command Get-CdfAdoPipExtraIndexUrl | Should -HaveParameter "AllowKeyVaultNetworkRuleUpdate"
+        }
+    }
+
+    Context "parameter AllowKeyVaultNetworkRuleUpdate" {
+        It "should be passed to Get-CdfSecret" {
+            Mock Get-CdfSecret { return [PSCustomObject]@{ SecretValue = "my-secret" | ConvertTo-SecureString -AsPlainText } } -ModuleName CloudDeploymentFramework
+
+            $Parameters = @{
+                SecretName                     = "PatDisplayName"
+                VaultName                      = "kv-test"
+                AllowKeyVaultNetworkRuleUpdate = $true
+                OrganizationName               = "my-organization"
+                ProjectName                    = "my-project"
+                FeedName                       = "my-feed"
+            }
+            Get-CdfAdoPipExtraIndexUrl @Parameters 
+            Assert-MockCalled Get-CdfSecret -Exactly 1 -Scope It -ParameterFilter { $AllowKeyVaultNetworkRuleUpdate -eq $true } -ModuleName CloudDeploymentFramework
+        }
+    }
 }
