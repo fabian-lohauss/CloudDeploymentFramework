@@ -44,7 +44,7 @@ if ($Version -match "-") {
     $NewPrereleaseVersion = $Version
     Write-Host "New prerelease version: $NewPrereleaseVersion"
     if (Test-Path Env:GITHUB_STEP_SUMMARY) {
-        ("New prerelease version is '{0}'" -f $NewPrereleaseVersion)  | Out-File -FilePath $Env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
+        ("New prerelease version is '{0}'" -f $NewPrereleaseVersion) | Out-File -FilePath $Env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
     }
     $NewVersion = $NewPrereleaseVersion -split "-" | Select-Object -First 1
     Write-Host "New version for PSGallery: $NewVersion"
