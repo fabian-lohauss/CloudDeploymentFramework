@@ -37,9 +37,8 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           tag-prefix: 'v'
-          default-version: '0.0.1'
+          default-version: '1.2.3'
           prerelease: 'prerelease'
-          dry-run: true
 
       - name: Run PSScriptAnalyzer
         uses: microsoft/psscriptanalyzer-action@v1.0
