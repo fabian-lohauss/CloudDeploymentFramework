@@ -39,7 +39,7 @@ foreach ($File in $PublicFiles) {
 }
 Write-Host ("Public functions: '{0}'" -f ($PublicFunctions -join "', '"))
 
-if ($Version -contains "-") {
+if ($Version -match "-") {
     Write-Host "Prerelease version detected"
     $NewPrereleaseVersion = $Version
     Write-Host "New prerelease version: $NewPrereleaseVersion"

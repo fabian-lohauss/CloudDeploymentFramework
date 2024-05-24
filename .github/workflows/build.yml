@@ -93,11 +93,13 @@ jobs:
         shell: pwsh
         run: |
           if ($env:COMMIT_MESSAGE -match '#minor') {
-            echo "##[set-output name=incremented-value;]minor"
-            echo "##[set-output name=prerelease;]"
+            Write-Host "Setting parameter create to a new minor release version"
+            Write-Host "##[set-output name=incremented-value;]minor"
+            Write-Host "##[set-output name=prerelease;]"
           } else {
-            echo "##[set-output name=incremented-value;]patch"
-            echo "##[set-output name=prerelease;]prerelease"
+            Write-Host "Setting parameter to create a new prerelease patch version"
+            Write-Host "##[set-output name=incremented-value;]patch"
+            Write-Host "##[set-output name=prerelease;]prerelease"
           }
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
