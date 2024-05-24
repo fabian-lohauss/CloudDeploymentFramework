@@ -90,9 +90,17 @@ jobs:
 
       - name: create parameters for create tag
         id: CreateTagParameter
+        shell: pwsh
         run: |
-          echo "##[set-output name=incremented-value;]minor"
-          echo "##[set-output name=prerelease;]"
+          if ($env:COMMIT_MESSAGE -match '#minor') {
+            echo "##[set-output name=incremented-value;]minor"
+            echo "##[set-output name=prerelease;]"
+          } else {
+            echo "##[set-output name=incremented-value;]patch"
+            echo "##[set-output name=prerelease;]prerelease"
+          }
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
       - uses: SOLIDSoftworks/semver-tags@v1
         id: CreateTag
