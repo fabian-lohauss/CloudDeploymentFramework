@@ -14,7 +14,7 @@ Function Deploy-CdfComponent {
     Write-Verbose ("Deploying component {0} v{1} to resource group {2}" -f $Name, $Version, $ResourceGroupName)
     try {
         $Component = Get-CdfComponent -Name $Name -Version $Version
-        New-AzResourceGroupDeploymentStack -Name $Name -ResourceGroupName $ResourceGroupName -TemplateFile $Component.Path -DenySettingsMode DenyDelete | Out-Null
+        New-AzResourceGroupDeploymentStack -Name $Name -ResourceGroupName $ResourceGroupName -TemplateFile $Component.Path -DenySettingsMode DenyDelete -ActionOnUnmanage DeleteAll | Out-Null
         Write-Verbose ("Component {0} v{1} deployed to resource group {2}" -f $Name, $Version, $ResourceGroupName)
     }
     catch {

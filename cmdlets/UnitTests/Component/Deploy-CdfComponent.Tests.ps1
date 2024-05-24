@@ -25,7 +25,7 @@ Describe "Deploy-CdfComponent" {
 
         It "should deploy the component" {
             Deploy-CdfComponent -Name "Component" -Version "1.0.0" -ResourceGroupName "rg"
-            Should -Invoke New-AzResourceGroupDeploymentStack -Times 1 -ModuleName CloudDeploymentFramework
+            Should -Invoke New-AzResourceGroupDeploymentStack -Times 1 -ParameterFilter { $ActionOnUnmanage -eq "DeleteAll" -and $DenySettingsMode -eq "DenyDelete" } -ModuleName CloudDeploymentFramework
         }
     }
 
