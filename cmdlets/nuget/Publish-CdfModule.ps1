@@ -39,20 +39,29 @@ foreach ($File in $PublicFiles) {
 }
 Write-Host ("Public functions: '{0}'" -f ($PublicFunctions -join "', '"))
 
-
-$NewPrereleaseVersion = $Version
-Write-Host "New prerelease version: $NewPrereleaseVersion"
-if (Test-Path Env:GITHUB_STEP_SUMMARY) {
+if ($Version -contains "-") {
+    Write-Host "Prerelease version detected"
+    $NewPrereleaseVersion = $Version
+    Write-Host "New prerelease version: $NewPrereleaseVersion"
+    if (Test-Path Env:GITHUB_STEP_SUMMARY) {
         ("New prerelease version is '{0}'" -f $NewPrereleaseVersion)  | Out-File -FilePath $Env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
-}
-$NewVersion = $NewPrereleaseVersion -split "-" | Select-Object -First 1
-Write-Host "New version for PSGallery: $NewVersion"
+    }
+    $NewVersion = $NewPrereleaseVersion -split "-" | Select-Object -First 1
+    Write-Host "New version for PSGallery: $NewVersion"
 
-$PrereleaseTag = $NewPrereleaseVersion -split "-" | Select-Object -Last 1
-if ([string]::IsNullOrEmpty($PrereleaseTag)) {
-    $PrereleaseTag = $null
+    $PrereleaseTag = $NewPrereleaseVersion -split "-" | Select-Object -Last 1
+    Write-Host "Prerelease tag for PSGallery: $PrereleaseTag"
 }
-Write-Host "Prerelease tag for PSGallery: $PrereleaseTag"
+else {
+    Write-Host "Release version detected"
+    $NewVersion = $Version
+    Write-Host "New version for PSGallery: $NewVersion"
+    $PrereleaseTag = $null
+    if (Test-Path Env:GITHUB_STEP_SUMMARY) {
+        ("New release version is '{0}'" -f $NewVersion)  | Out-File -FilePath $Env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
+    }
+}
+
 
 
 $Psd1File = Join-Path $SourceFolder -ChildPath CloudDeploymentFramework.psd1
