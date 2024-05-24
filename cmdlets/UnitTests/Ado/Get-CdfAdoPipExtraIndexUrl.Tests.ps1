@@ -5,13 +5,8 @@ BeforeAll {
 Describe "Get-CdfAdoPipExtraIndexUrl" {
     Context "token in keyvault" {
         BeforeAll {
-            Mock Get-CdfSecret -ParameterFilter { $Name -eq "PatDisplayName" } { 
-                Function Get-MockSecret {
-                    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Used for mocking in tests only')]
-                    param()
-                    return [PSCustomObject]@{ SecretValue = ("my-token" | ConvertTo-SecureString -AsPlainText) }
-                }
-                return Get-MockSecret
+            Mock Get-CdfSecret -ParameterFilter { $Name -eq "PatDisplayName" -and $AsPlainText } { 
+                return "gdi5kqsofdx7fc"
             } -ModuleName CloudDeploymentFramework
         }
 
@@ -24,7 +19,9 @@ Describe "Get-CdfAdoPipExtraIndexUrl" {
             $ProjectName = "my-project"
             $FeedName = "my-feed"
             $url = Get-CdfAdoPipExtraIndexUrl @PipPATParameters -ProjectName $ProjectName -FeedName $FeedName
-            $url | Should -Be "https://my-organization:my-token@pkgs.dev.azure.com/my-organization/my-project/_packaging/my-feed/pypi/simple/"
+           
+            Assert-MockCalled Get-CdfSecret -Exactly 1 -Scope It -ParameterFilter { $Name -eq "PatDisplayName" -and $AsPlainText } -ModuleName CloudDeploymentFramework
+            $url | Should -Be "https://my-organization:gdi5kqsofdx7fc@pkgs.dev.azure.com/my-organization/my-project/_packaging/my-feed/pypi/simple/"
         }
     }
 

@@ -15,7 +15,16 @@ Describe "Get-CdfSecret" {
             @{ Name = "AllowKeyVaultNetworkRuleUpdate"; Type = "Switch"; Mandatory = $false}
             @{ Name = "AsPlainText"; Type = "Switch"; Mandatory = $false}
         ) {
-            Get-Command Get-CdfSecret | Should -HaveParameter $PSItem.Name -Type $PSItem.Type -Mandatory:$PSItem.Mandatory
+            Get-Command Get-CdfSecret | Should -HaveParameter $PSItem.Name -Type $PSItem.Type -Mandatory:$PSItem.Mandatory 
+        }
+    }
+
+    Context "VaultName from pipeline by ValueFromPipelineByPropertyName" {
+        It "should accept VaultName from pipeline" {
+            Mock Get-AzKeyVaultSecret { } -ModuleName CloudDeploymentFramework
+            $vault = [PSCustomObject]@{ VaultName = "myvault" }
+            $vault | Get-CdfSecret -Name "mysecret"
+            Assert-MockCalled Get-AzKeyVaultSecret -Exactly 1 -ParameterFilter { $VaultName -eq "myvault" } -ModuleName CloudDeploymentFramework
         }
     }
 

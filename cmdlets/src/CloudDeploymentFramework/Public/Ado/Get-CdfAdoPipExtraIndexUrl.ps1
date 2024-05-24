@@ -21,12 +21,7 @@ Function Get-CdfAdoPipExtraIndexUrl {
         [switch]$AllowKeyVaultNetworkRuleUpdate
     )
 
-    $HexString = (Get-CdfSecret -VaultName $VaultName -Name $SecretName -AllowKeyVaultNetworkRuleUpdate:$AllowKeyVaultNetworkRuleUpdate).SecretValue | ConvertFrom-SecureString 
-    
-    $bytes = for ($i = 0; $i -lt $HexString.Length; $i += 2) {
-        [Convert]::ToByte($HexString.Substring($i, 2), 16)
-    }
-    $PatToken = [System.Text.Encoding]::Unicode.GetString($bytes)
+    $PatToken = Get-CdfSecret -VaultName $VaultName -Name $SecretName -AllowKeyVaultNetworkRuleUpdate:$AllowKeyVaultNetworkRuleUpdate -AsPlainText
     
     $url = ("https://{0}:{1}@pkgs.dev.azure.com/{0}/{2}/_packaging/{3}/pypi/simple/" -f $OrganizationName, $PatToken, $ProjectName, $FeedName)
     return $url

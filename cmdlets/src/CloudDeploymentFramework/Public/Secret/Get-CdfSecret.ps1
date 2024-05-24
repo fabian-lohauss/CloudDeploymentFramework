@@ -1,8 +1,8 @@
 Function Get-CdfSecret {
     [CmdletBinding()]
     param(
-        [Parameter(ParameterSetName="default" , Mandatory)]
-        [Parameter(ParameterSetName="AllowKeyVaultNetworkRuleUpdate" , Mandatory)]
+        [Parameter(ParameterSetName="default" , Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName="AllowKeyVaultNetworkRuleUpdate" , Mandatory, ValueFromPipelineByPropertyName)]
         [Alias("KeyvaultName")]
         [string]$VaultName,
 
