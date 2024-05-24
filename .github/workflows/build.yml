@@ -88,6 +88,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: create parameters for create tag
+        id: CreateTagParameter
+        run: |
+          echo "##[set-output name=incremented-value;]minor"
+          echo "##[set-output name=prerelease;]"
+
       - uses: SOLIDSoftworks/semver-tags@v1
         id: CreateTag
         name: Create Tag
@@ -95,8 +101,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           tag-prefix: 'v'
           default-version: '1.2.3'
-          incremented-value: 'patch'
-          prerelease: 'prerelease'
+          incremented-value: '${{ steps.CreateTagParameter.outputs.incremented-value }}'
+          prerelease: '${{ steps.CreateTagParameter.outputs.prerelease }}'
           create-release: true
           add-major-tag: true
           add-minor-tag: true
