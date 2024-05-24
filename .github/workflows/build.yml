@@ -94,12 +94,12 @@ jobs:
         run: |
           if ($env:COMMIT_MESSAGE -match '#minor') {
             Write-Host "Setting parameter create to a new minor release version"
-            "incremented-value=minor" >> $GITHUB_OUTPUT
-            "prerelease=" >> $GITHUB_OUTPUT
+            Write-Host "incremented-value=minor" >> $GITHUB_OUTPUT
+            Write-Host "prerelease=" >> $GITHUB_OUTPUT
           } else {
             Write-Host "Setting parameter to create a new prerelease patch version"
-            "incremented-value=patch" >> $GITHUB_OUTPUT
-            "prerelease=prerelease" >> $GITHUB_OUTPUT
+            Write-Host "incremented-value=patch" >> $GITHUB_OUTPUT
+            Write-Host "prerelease=prerelease" >> $GITHUB_OUTPUT
           }
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
