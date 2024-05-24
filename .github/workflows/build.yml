@@ -21,23 +21,6 @@ permissions:
   contents: read
 
 jobs:
-  Tag:
-    permissions:
-      contents: write
-    name: Create Tag
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: SOLIDSoftworks/semver-tags@v1
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
-          tag-prefix: 'v'
-          default-version: '1.2.3'
-          prerelease: 'prerelease'
-
   PSScriptAnalyzer:
     permissions:
       contents: read # for actions/checkout to fetch code
@@ -98,16 +81,33 @@ jobs:
   publish-to-gallery:
     runs-on: ubuntu-latest
     needs: [test, PSScriptAnalyzer]
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: SOLIDSoftworks/semver-tags@v1
+        id: CreateTag
+        name: Create Tag
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+          tag-prefix: 'v'
+          default-version: '1.2.3'
+          incremented-value: 'patch'
+          prerelease: 'prerelease'
+          create-release: true
+          add-major-tag: true
+          add-minor-tag: true
 
       - name: Build and publish
         shell: pwsh
         run: |
-          . ./cmdlets/nuget/Publish-CdfModule.ps1 -NuGetApiKey $env:NUGET_API_KEY -NewRelease:($env:GITHUB_EVENT_NAME -eq "release")
+          . ./cmdlets/nuget/Publish-CdfModule.ps1 -Version $env:VERSION -NuGetApiKey $env:NUGET_API_KEY 
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          VERSION: ${{ steps.CreateTag.outputs.semantic-version }} 
 
   
 

@@ -1,6 +1,9 @@
 param(
+    [Parameter(Mandatory = $true)]
     [string]$NuGetApiKey,
-    [switch]$NewRelease
+
+    [Parameter(Mandatory = $true)]
+    [string]$Version
 )
 
 $NugetFolder = $PSScriptRoot
@@ -36,56 +39,31 @@ foreach ($File in $PublicFiles) {
 }
 Write-Host ("Public functions: '{0}'" -f ($PublicFunctions -join "', '"))
 
-Write-Host "Getting latest release and prerelease version of CloudDeploymentFramework module from PSGallery"
-$PublishedReleaseModule = Find-PSResource CloudDeploymentFramework -Repository PSGallery
-$LatestReleaseVersion = $PublishedReleaseModule.Version
-Write-Host "Latest release version: $LatestReleaseVersion"
 
-$PublishedPrereleaseModule = Find-PSResource CloudDeploymentFramework -Prerelease -Repository PSGallery
-$LatestPrereleaseVersion = $PublishedPrereleaseModule.Version
-Write-Host "Latest prerelease version: $LatestPrereleaseVersion"
-if ($LatestPrereleaseVersion -gt $LatestReleaseVersion) {
-    $LatestPublishedVersion = $LatestPrereleaseVersion
-}
-else {
-    $LatestPublishedVersion = $LatestReleaseVersion
-}
-
-if ($NewRelease) {
-    $NewReleaseVersion = [Version]::new($LatestPublishedVersion.Major, $LatestPublishedVersion.Minor + 1, 0)
-    Write-Host "New release version: $NewReleaseVersion"
-    if (Test-Path Env:GITHUB_STEP_SUMMARY) {
-        ("New release version is '{0}'" -f $NewReleaseVersion)  | Out-File -FilePath $Env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
-    }
-    $NewVersion = $NewReleaseVersion
-    $PrereleaseTag = $null
-}
-else {
-    $NewPrereleaseVersion = [Version]::new($LatestPublishedVersion.Major, $LatestPublishedVersion.Minor, $LatestPublishedVersion.Build + 1)
-    Write-Host "New prerelease version: $NewPrereleaseVersion"
-    if (Test-Path Env:GITHUB_STEP_SUMMARY) {
+$NewPrereleaseVersion = $Version
+Write-Host "New prerelease version: $NewPrereleaseVersion"
+if (Test-Path Env:GITHUB_STEP_SUMMARY) {
         ("New prerelease version is '{0}'" -f $NewPrereleaseVersion)  | Out-File -FilePath $Env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
-    }
-    $NewVersion = $NewPrereleaseVersion
-    $PrereleaseTag = "prerelease"
 }
+$NewVersion = $NewPrereleaseVersion
+$PrereleaseTag = "prerelease"
 
 $Psd1File = Join-Path $SourceFolder -ChildPath CloudDeploymentFramework.psd1
 $ManifestParameter = @{
-    Path = $Psd1File
-    RootModule = "CloudDeploymentFramework.psm1"
-    GUID = '1ad171ad-4dbe-4b99-ab7f-b20ec586da10'
-    ModuleVersion = $NewVersion
-    Author = "Fabian Lohauß"
-    CompanyName = ""
-    Copyright = 'Fabian Lohauß'
-    Description = 'Framework to deploy Azure resouces with PowerShell, Bicep, or Terraform'
+    Path              = $Psd1File
+    RootModule        = "CloudDeploymentFramework.psm1"
+    GUID              = '1ad171ad-4dbe-4b99-ab7f-b20ec586da10'
+    ModuleVersion     = $NewVersion
+    Author            = "Fabian Lohauß"
+    CompanyName       = ""
+    Copyright         = 'Fabian Lohauß'
+    Description       = 'Framework to deploy Azure resouces with PowerShell, Bicep, or Terraform'
     PowerShellVersion = '7.0'
     FunctionsToExport = '*'
-    CmdletsToExport = $PublicFunctions
+    CmdletsToExport   = $PublicFunctions
     VariablesToExport = '*'
-    AliasesToExport = '*'
-    FileList = 'CloudDeploymentFramework.psm1'
+    AliasesToExport   = '*'
+    FileList          = 'CloudDeploymentFramework.psm1'
 }
 if ($PrereleaseTag) {
     $ManifestParameter.Add("Prerelease", $PrereleaseTag)
