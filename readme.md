@@ -25,7 +25,6 @@ load balancer backends are deployed to the stamp resource groups
 
 ```pwsh
 Install-Module CloudDeploymentFramework
-
 ```
 
 ```pwsh
