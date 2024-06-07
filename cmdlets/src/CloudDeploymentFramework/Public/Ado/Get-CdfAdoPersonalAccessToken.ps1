@@ -1,4 +1,23 @@
 function Get-CdfAdoPersonalAccessToken {
+    <#
+    .SYNOPSIS
+    Get personal access tokens for an Azure DevOps organization.
+
+    .DESCRIPTION
+    Get personal access tokens for an Azure DevOps organization.
+
+    .PARAMETER OrganizationName
+    The name of the Azure DevOps organization.
+
+    .PARAMETER PatDisplayName
+    The display name of the personal access token.
+
+    .EXAMPLE
+    Get-CdfAdoPersonalAccessToken -OrganizationName "MyOrganization"
+
+    .EXAMPLE
+    Get-CdfAdoPersonalAccessToken -OrganizationName "MyOrganization" -PatDisplayName "MyPat"
+    #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
@@ -21,13 +40,13 @@ function Get-CdfAdoPersonalAccessToken {
     $ResultObjects = @()
     foreach ($PatToken in $PatTokens) {
         $ResultObjects += [PSCustomObject]@{
-            DisplayName           = $PatToken.displayName
-            Token                 = $PatToken.token
-            ValidFrom             = $PatToken.validFrom
-            ValidTo               = $PatToken.validTo
-            Scope                 = $PatToken.scope
-            AuthorizationId       = $PatToken.authorizationId
-            OrganizationName      = $OrganizationName
+            DisplayName      = $PatToken.displayName
+            Token            = $PatToken.token
+            ValidFrom        = $PatToken.validFrom
+            ValidTo          = $PatToken.validTo
+            Scope            = $PatToken.scope
+            AuthorizationId  = $PatToken.authorizationId
+            OrganizationName = $OrganizationName
         }
     }
 
