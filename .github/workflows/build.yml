@@ -121,10 +121,12 @@ jobs:
       - name: Build and publish
         shell: pwsh
         run: |
+          Write-Host ("Previous version='{0}'" -f $env:PREVIOUS_VERSION) | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           . ./cmdlets/nuget/Publish-CdfModule.ps1 -Version $env:VERSION -NuGetApiKey $env:NUGET_API_KEY 
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
           VERSION: ${{ steps.CreateTag.outputs.semantic-version }} 
+          PREVIOUS_VERSION: ${{ steps.CreateTag.outputs.previous-version }}
 
   
 
