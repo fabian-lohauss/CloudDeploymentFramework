@@ -11,9 +11,11 @@ name: Build
 
 on:
   push:
-    branches: [ "main" ]
+    paths:
+      - 'cmdlets/**'
   pull_request:
-    branches: [ "main" ]
+    paths:
+      - 'cmdlets/**'
   release:
     types: [released]
   workflow_dispatch:
