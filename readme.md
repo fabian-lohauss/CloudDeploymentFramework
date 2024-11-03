@@ -18,8 +18,7 @@ load balancer backends are deployed to the stamp resource groups
 [Cmdlets](cmdlets/readme.md)
 
 # DevContainer
-
-[fabian-lohauss/CloudDeploymentFramework](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/fabian-lohauss/CloudDeploymentFramework)
+[![Open in Dev Containers](https://img.shields.io/static/v1?label=Dev%20Containers&message=Open%20in%20VS%20code&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/fabian-lohauss/CloudDeploymentFramework)
 
 [Open in GitHub Codespaces](https://github.com/codespaces/new?repository=fabian-lohauss/CloudDeploymentFramework)
 
