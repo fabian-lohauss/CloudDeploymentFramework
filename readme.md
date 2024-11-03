@@ -17,7 +17,11 @@ load balancer backends are deployed to the stamp resource groups
 
 [Cmdlets](cmdlets/readme.md)
 
-# Setup DevContainer prerequisites
+# DevContainer
+
+[Open in GitHub Codespaces](https://github.com/codespaces/new?repository=fabian-lohauss/CloudDeploymentFramework)
+
+## Setup DevContainer prerequisites
 
 [Install and configure DevContainer prerequisites](docs/readme.DevContainer.md)
 
