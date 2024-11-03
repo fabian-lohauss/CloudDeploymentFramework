@@ -1,5 +1,9 @@
-Install-Module Pester -Scope CurrentUser -Force
-Install-Module Az.Accounts -Scope CurrentUser -Force
-Install-Module Az.Resources -Scope CurrentUser -Force
+Write-Host "############################################################"
+Write-Host "Running post create command..."
+Write-Host "############################################################"
 
-npm install -g @devcontainers/cli
+Write-Host "Installing PowerShell prerequisites..."
+. $PSScriptRoot/Install-PowerShellPrerequisites.ps1
+
+Write-Host "Post create command completed."
+Write-Host "############################################################"
