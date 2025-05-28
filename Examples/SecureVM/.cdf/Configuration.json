@@ -1,0 +1,9 @@
+{
+  "Name": "Secure VM",
+  "Environment": {
+    "dev": {
+      "Tenant": "16b3c013-d300-468d-ac64-7eda0820b6d3",
+      "Subscription": "20f9e549-a71c-402d-8526-f385587ceb8d"
+    }
+  }
+}

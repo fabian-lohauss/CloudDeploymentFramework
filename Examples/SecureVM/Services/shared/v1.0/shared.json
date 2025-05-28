@@ -1,11 +1,11 @@
 {
   "Component": [
     {
-      "Name": "keyvault",
+      "Name": "shared",
       "Version": "1.0"
     }
   ],
-  "Name": "shared",
+  "Name": "SecureVM",
   "PreRelease": false,
   "Version": "1.0"
 }
