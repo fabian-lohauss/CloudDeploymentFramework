@@ -12,10 +12,10 @@ name: Build
 on:
   push:
     paths:
-      - 'cmdlets/**'
+      - 'src/cmdlets/**'
   pull_request:
     paths:
-      - 'cmdlets/**'
+      - 'src/cmdlets/**'
   release:
     types: [released]
   workflow_dispatch:
@@ -40,7 +40,7 @@ jobs:
         with:
           # Check https://github.com/microsoft/action-psscriptanalyzer for more info about the options.
           # The below set up runs PSScriptAnalyzer to your entire repository and runs some basic security rules.
-          path: .\cmdlets\src
+          path: .\src\cmdlets
           recurse: true
           # Include your own basic security rules. Removing this option will run all the rules
           includeRule: '"PSAvoidGlobalAliases", "PSAvoidUsingConvertToSecureStringWithPlainText"'
@@ -65,7 +65,7 @@ jobs:
         shell: pwsh
         run: |
           .devcontainer/custom/Install-PowerShellPrerequisites.ps1
-          Invoke-Pester ./cmdlets/UnitTests -OutputFile TestResults-UnitTest.xml -OutputFormat JUnitXml
+          Invoke-Pester ./src/cmdlets/UnitTests -OutputFile TestResults-UnitTest.xml -OutputFormat JUnitXml
 
       - name: 'Upload unit test results'
         uses: actions/upload-artifact@v4
@@ -128,7 +128,7 @@ jobs:
           if (Test-Path Env:GITHUB_STEP_SUMMARY) {
             $PreviousVerionMessage | Out-File -FilePath $Env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
           }
-          . ./cmdlets/nuget/Publish-CdfModule.ps1 -Version $env:VERSION -NuGetApiKey $env:NUGET_API_KEY 
+          . ./src/cmdlets/nuget/Publish-CdfModule.ps1 -Version $env:VERSION -NuGetApiKey $env:NUGET_API_KEY 
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
           VERSION: ${{ steps.CreateTag.outputs.semantic-version }} 
