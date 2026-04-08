@@ -1,6 +1,9 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string]$NuGetApiKey,
+    [string]$FeedUrl,
+
+    [Parameter(Mandatory = $true)]
+    [string]$AccessToken,
 
     [Parameter(Mandatory = $true)]
     [string]$Version
@@ -89,13 +92,18 @@ New-ModuleManifest @ManifestParameter
 Write-Host ("Publishing module in version '{0}' to '{1}'" -f $NewVersion, $LocalRepositoryName)
 Publish-PSResource -Path $SourceFolder -ApiKey "abc" -Repository $LocalRepositoryName -Verbose
 
-if ([string]::IsNullOrEmpty($NuGetApiKey)) {
-    Write-Host ("Skipping publishing to PSGallery because no NuGetApiKey is provided")
+$AzureArtifactsRepositoryName = "AzureArtifacts"
+if (Get-PSResourceRepository -Name $AzureArtifactsRepositoryName -ErrorAction SilentlyContinue) {
+    Write-Host ("Updating Azure Artifacts repository '{0}' with Uri '{1}'" -f $AzureArtifactsRepositoryName, $FeedUrl)
+    Set-PSResourceRepository -Name $AzureArtifactsRepositoryName -Uri $FeedUrl -Trusted
 }
 else {
-    Write-Host ("Publishing module in version '{0}' to PSGallery" -f $NewVersion)
-    Publish-PSResource -Path $SourceFolder -ApiKey $NuGetApiKey -Repository "PSGallery" -Verbose
+    Write-Host ("Registering Azure Artifacts repository '{0}' with Uri '{1}'" -f $AzureArtifactsRepositoryName, $FeedUrl)
+    Register-PSResourceRepository -Name $AzureArtifactsRepositoryName -Uri $FeedUrl -Trusted
 }
+
+Write-Host ("Publishing module in version '{0}' to Azure Artifacts feed '{1}'" -f $NewVersion, $FeedUrl)
+Publish-PSResource -Path $SourceFolder -ApiKey $AccessToken -Repository $AzureArtifactsRepositoryName -Verbose
 
 
 
