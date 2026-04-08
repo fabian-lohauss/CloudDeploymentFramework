@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - '.devcontainer/**'
+      - 'devcontainer/**'
   pull_request:
     paths:
       - '.devcontainer/**'
+      - 'devcontainer/**'
   workflow_dispatch: 
   schedule: 
     - cron: '0 0 * * 0' # Runs every Sunday at midnight
@@ -38,7 +40,7 @@ jobs:
         run: npm install -g @devcontainers/cli
 
       - name: Build Dev Container
-        run: devcontainer build --image-name ghcr.io/fabian-lohauss/cdf-devcontainer:latest --platform "linux/amd64" --push false --workspace-folder .
+        run: devcontainer build --image-name ghcr.io/fabian-lohauss/cdf-devcontainer:latest --platform "linux/amd64" --push false --workspace-folder devcontainer
 
       - name: Push Docker image
         run: docker push ghcr.io/fabian-lohauss/cdf-devcontainer:latest
