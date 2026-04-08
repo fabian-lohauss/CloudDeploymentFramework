@@ -8,10 +8,7 @@ Items are grouped by severity and link to individual backlog files.
 
 ## 🔴 Critical — Security
 
-| ID | Title | File |
-|---|---|---|
-| [BACKLOG-001](BACKLOG-001-hardcoded-credentials-connect-cdfrdp.md) | Hardcoded credentials in `Connect-CdfRdp.ps1` | `Rdp/Connect-CdfRdp.ps1` |
-| [BACKLOG-002](BACKLOG-002-connect-cdfrdp-redefines-write-cdflog.md) | `Connect-CdfRdp.ps1` redefines `Write-CdfLog` locally | `Rdp/Connect-CdfRdp.ps1` |
+No open items.
 
 ---
 

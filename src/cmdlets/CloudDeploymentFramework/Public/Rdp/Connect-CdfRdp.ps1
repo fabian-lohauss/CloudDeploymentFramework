@@ -2,20 +2,17 @@ Function Connect-CdfRdp {
     [CmdletBinding()]
     param (
         [Parameter(ValueFromPipelineByPropertyName, Position = 0, Mandatory = $true)]
-        [string]$Name
+        [string]$Name,
+
+        [Parameter(Mandatory = $true)]
+        [string]$TenantId,
+
+        [Parameter(Mandatory = $true)]
+        [string]$SubscriptionId,
+
+        [Parameter(Mandatory = $true)]
+        [string]$AccountId
     )
-
-    Function Write-CdfLog {
-        param (
-            [Parameter(ValueFromPipelineByPropertyName, Position = 0, Mandatory = $true)]
-            [string]$Message
-        )
-        Write-Host $Message
-    }
-
-    $TenantId = "ac12e5c3-077a-4f43-b2ef-834901540086"
-    $SubscriptionId = "5577d40d-6f47-438f-bdb2-72d19a4c304e"
-    $AccountId = "fabianl@MngEnv205548.onmicrosoft.com"
 
     Write-CdfLog ("Connecting to Azure with tenantId: {0}, subscriptionId: {1}, accountId: {2}" -f $TenantId, $SubscriptionId, $AccountId)
 
