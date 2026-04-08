@@ -103,7 +103,11 @@ else {
 }
 
 Write-Host ("Publishing module in version '{0}' to Azure Artifacts feed '{1}'" -f $NewVersion, $FeedUrl)
-Publish-PSResource -Path $SourceFolder -ApiKey $AccessToken -Repository $AzureArtifactsRepositoryName -Verbose
+$Credential = New-Object System.Management.Automation.PSCredential(
+    "az",
+    (ConvertTo-SecureString $AccessToken -AsPlainText -Force)
+)
+Publish-PSResource -Path $SourceFolder -Credential $Credential -Repository $AzureArtifactsRepositoryName -Verbose
 
 
 
