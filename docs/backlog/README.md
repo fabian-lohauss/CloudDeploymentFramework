@@ -6,6 +6,14 @@ Items are grouped by severity and link to individual backlog files.
 
 ---
 
+## 🌐 Global — Process
+
+| ID | Title | File |
+|---|---|---|
+| [BACKLOG-018](BACKLOG-018-pipeline-failures-must-be-fixed-first.md) | Pipeline failures must always be checked and fixed first | N/A |
+
+---
+
 ## 🔴 Critical — Security
 
 No open items.
