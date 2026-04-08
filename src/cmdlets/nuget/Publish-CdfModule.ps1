@@ -24,7 +24,7 @@ else {
 }
 
 Write-Host ("Getting module source folder")
-$SourceFolder = Join-Path $NugetFolder -ChildPath ../src/CloudDeploymentFramework -Resolve
+$SourceFolder = Join-Path $NugetFolder -ChildPath ../CloudDeploymentFramework -Resolve
 Write-Host ("Module source folder: '{0}'" -f $SourceFolder)
 
 Write-Host ("Getting folder with public functions")
