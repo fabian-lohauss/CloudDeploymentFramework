@@ -12,6 +12,10 @@
 		"ghcr.io/devcontainers/features/powershell:2.0.1": {},
 		"ghcr.io/rchaganti/vsc-devcontainer-features/azurebicep:1": {}
 	},
+	"containerEnv": {
+		"CdfUserName": "${localEnv:CdfUserName}",
+		"CdfUserEmail": "${localEnv:CdfUserEmail}"
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
