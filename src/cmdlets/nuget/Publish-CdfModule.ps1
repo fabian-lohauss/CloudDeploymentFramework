@@ -103,18 +103,9 @@ else {
 }
 
 Write-Host ("Publishing module in version '{0}' to Azure Artifacts feed '{1}'" -f $NewVersion, $FeedUrl)
-# PSScriptAnalyzer requires SuppressMessageAttribute on a function to silence
-# PSAvoidUsingConvertToSecureStringWithPlainText. The access token is a short-lived
-# OIDC bearer token obtained at runtime; there is no encrypted alternative.
-function New-AzureArtifactsCredential {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
-        'PSAvoidUsingConvertToSecureStringWithPlainText', '',
-        Justification = 'OIDC bearer token from az CLI — short-lived, no encrypted alternative at runtime')]
-    param([string]$Token)
-    $secure = ConvertTo-SecureString $Token -AsPlainText -Force
-    return New-Object System.Management.Automation.PSCredential("az", $secure)
-}
-$Credential = New-AzureArtifactsCredential -Token $AccessToken
+$SecureToken = [System.Security.SecureString]::new()
+$AccessToken.ToCharArray() | ForEach-Object { $SecureToken.AppendChar($_) }
+$Credential = New-Object System.Management.Automation.PSCredential("az", $SecureToken)
 Publish-PSResource -Path $SourceFolder -Credential $Credential -ApiKey "AzureDevOps" -Repository $AzureArtifactsRepositoryName -Verbose
 
 
